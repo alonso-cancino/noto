@@ -11,18 +11,23 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## Current Status
 
-**Version:** 0.2.0-alpha (Early Development)
-**Status:** Phases 1-2 Complete
+**Version:** 0.3.0-alpha (Early Development)
+**Status:** Phases 0, 1-2, and 3 Complete
 
 ### ✅ What Works Now
 - **Markdown Editor** - Full markdown support with live preview (Monaco Editor)
 - **LaTeX Math** - Beautiful math rendering with KaTeX (`$inline$` and `$$block$$` equations)
-- **Local File Storage** - Create, edit, and organize markdown files locally
+- **PDF Viewer** - Full PDF viewing with page navigation, zoom, and text selection
+- **PDF Search** - Search text within PDF documents
+- **Page Thumbnails** - Visual page navigation sidebar
+- **Drag & Drop Import** - Drop PDF files into the app to import them
+- **Local File Storage** - Create, edit, and organize markdown files and PDFs locally
 - **Auto-Save** - Automatic saving with dirty state tracking
 - **Code Highlighting** - Syntax highlighting in code blocks
+- **Testing Infrastructure** - Jest, Playwright E2E, ESLint, CI/CD with GitHub Actions
 
 ### 🚧 In Development (See [PR_ROADMAP.md](PR_ROADMAP.md))
-- PDF Viewer & Annotations (Phase 3)
+- PDF Annotations (Phase 4)
 - Citation System (Phase 5)
 - Google Drive Sync (Phase 6)
 - Search & Command Palette (Phase 7)
@@ -35,16 +40,23 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 - **Markdown Editor** ✅ - Write notes with full markdown support and live preview
 - **LaTeX Math** ✅ - Beautiful math rendering with KaTeX
 - **VSCode Editor** ✅ - Monaco Editor with syntax highlighting
-- **Local Storage** ✅ - File system for notes and folders
+- **PDF Viewer** ✅ - Full-featured PDF viewing with PDF.js
+  - Page-by-page navigation (← → arrow keys)
+  - Zoom controls (50% - 300%)
+  - Text selection and copying
+  - In-document search
+  - Page thumbnails sidebar
+  - Drag & drop PDF import
+- **Local Storage** ✅ - File system for notes and PDFs
 - **Auto-Save** ✅ - Never lose your work
+- **Testing & CI/CD** ✅ - Comprehensive testing infrastructure
 
 ### Planned Features (Coming Soon)
 
-- **PDF Viewer** 🚧 - Read PDF documents (Phase 3)
-- **PDF Annotations** 🚧 - Highlight text, add notes (Phase 4)
+- **PDF Annotations** 🚧 - Highlight text, add notes, area selections (Phase 4)
 - **Citation System** 🚧 - Quote PDFs in markdown with bidirectional links (Phase 5)
-- **Google Drive Sync** 🚧 - Cloud synchronization (Phase 6)
-- **Full-Text Search** 🚧 - Search across all notes (Phase 7)
+- **Google Drive Sync** 🚧 - Cloud synchronization with offline support (Phase 6)
+- **Full-Text Search** 🚧 - Search across all notes and PDFs (Phase 7)
 - **Command Palette** 🚧 - Quick command access (Phase 7)
 
 ## Installation
@@ -380,10 +392,11 @@ See **[PR_ROADMAP.md](PR_ROADMAP.md)** for the complete 52-PR development plan.
 
 ### Current Progress
 
+- ✅ **Phase 0:** CI/CD & Testing Infrastructure (Complete - PRs 1-5)
 - ✅ **Phase 1:** Foundation & File System (Complete)
 - ✅ **Phase 2:** Markdown Editor with Monaco (Complete)
-- 🚧 **Phase 3:** PDF Viewer (7 PRs) - Next
-- 🚧 **Phase 4:** PDF Annotations (8 PRs)
+- ✅ **Phase 3:** PDF Viewer (Complete - PRs 6-12)
+- 🚧 **Phase 4:** PDF Annotations (8 PRs) - Next
 - 🚧 **Phase 5:** Citation System (5 PRs)
 - 🚧 **Phase 6:** Google Drive Sync (10 PRs)
 - 🚧 **Phase 7:** Search & Polish (10 PRs)

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { PDFCanvasProps } from './types';
+import { TextLayer } from './TextLayer';
 
 export function PDFCanvas({
   page,
@@ -7,6 +8,7 @@ export function PDFCanvas({
   onRenderComplete,
 }: PDFCanvasProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const renderPage = async () => {
@@ -47,14 +49,21 @@ export function PDFCanvas({
   }, [page, scale, onRenderComplete]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="pdf-canvas"
-      style={{
-        display: 'block',
-        maxWidth: '100%',
-        height: 'auto',
-      }}
-    />
+    <div
+      ref={containerRef}
+      className="pdf-page-container relative inline-block"
+    >
+      <canvas
+        ref={canvasRef}
+        className="pdf-canvas"
+        style={{
+          display: 'block',
+          maxWidth: '100%',
+          height: 'auto',
+        }}
+      />
+      {/* Text layer for text selection */}
+      <TextLayer page={page} scale={scale} />
+    </div>
   );
 }

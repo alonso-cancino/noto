@@ -147,6 +147,7 @@ export interface IpcHandlers {
   'file:rename': (oldPath: string, newPath: string) => Promise<void>;
   'file:list': (folderPath?: string) => Promise<FileMetadata[]>;
   'file:create': (path: string, type: FileType) => Promise<void>;
+  'file:import-pdf': (fileName: string, base64Data: string) => Promise<void>;
 
   // Google Drive operations
   'drive:auth': () => Promise<boolean>;

@@ -4,6 +4,8 @@ import { usePDF } from '../../hooks/usePDF';
 import { PDFCanvas } from './PDFCanvas';
 import { PageNavigation } from './PageNavigation';
 import { ZoomControls } from './ZoomControls';
+import { ThumbnailSidebar } from './ThumbnailSidebar';
+import { SearchBar } from './SearchBar';
 import { PDFViewerProps } from './types';
 
 export function PDFViewer({ filePath, onError }: PDFViewerProps): JSX.Element {
@@ -13,6 +15,8 @@ export function PDFViewer({ filePath, onError }: PDFViewerProps): JSX.Element {
     null
   );
   const [scale, setScale] = useState<number>(1.0);
+  const [showThumbnails, setShowThumbnails] = useState<boolean>(false);
+  const [showSearch, setShowSearch] = useState<boolean>(false);
 
   // Load page when PDF is ready or page changes
   useEffect(() => {
@@ -69,18 +73,53 @@ export function PDFViewer({ filePath, onError }: PDFViewerProps): JSX.Element {
     <div className="pdf-viewer flex flex-col h-full bg-gray-100">
       {/* Toolbar with Page Navigation and Zoom Controls */}
       <div className="flex items-center justify-between bg-gray-800">
-        <PageNavigation
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-        <ZoomControls scale={scale} onScaleChange={setScale} />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowThumbnails(!showThumbnails)}
+            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white ml-2"
+            title="Toggle thumbnails"
+          >
+            {showThumbnails ? '◀' : '▶'} Pages
+          </button>
+          <PageNavigation
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white"
+            title="Search in PDF"
+          >
+            🔍 Search
+          </button>
+          <ZoomControls scale={scale} onScaleChange={setScale} />
+        </div>
       </div>
 
-      {/* PDF Content */}
-      <div className="pdf-viewer-content flex-1 overflow-auto p-4">
-        <div className="flex justify-center">
-          <PDFCanvas page={currentPageProxy} scale={scale} />
+      {/* Search Bar */}
+      {showSearch && (
+        <SearchBar pdf={pdf} onResultSelect={handlePageChange} />
+      )}
+
+      {/* Main Content Area with Thumbnails and PDF */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Thumbnail Sidebar */}
+        {showThumbnails && (
+          <ThumbnailSidebar
+            pdf={pdf}
+            currentPage={currentPage}
+            onPageSelect={handlePageChange}
+          />
+        )}
+
+        {/* PDF Content */}
+        <div className="pdf-viewer-content flex-1 overflow-auto p-4">
+          <div className="flex justify-center">
+            <PDFCanvas page={currentPageProxy} scale={scale} />
+          </div>
         </div>
       </div>
     </div>
