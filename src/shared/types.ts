@@ -181,6 +181,15 @@ export interface IpcHandlers {
   // App operations
   'app:getVersion': () => Promise<string>;
   'app:openExternal': (url: string) => Promise<void>;
+
+  // Recent files operations
+  'recent:get': () => Promise<RecentFile[]>;
+  'recent:add': (filePath: string) => Promise<void>;
+  'recent:clear': () => Promise<void>;
+
+  // Export operations
+  'export:markdown-to-pdf': (filePath: string, outputPath: string) => Promise<void>;
+  'export:markdown-to-html': (filePath: string, outputPath: string) => Promise<void>;
 }
 
 /**
@@ -194,6 +203,16 @@ export interface IpcEvents {
   'file:updated': (data: { path: string }) => void;
   'file:deleted': (data: { path: string }) => void;
   'open-citation': (data: { pdfPath: string; page: number; annotationId?: string }) => void;
+}
+
+// ============================================================================
+// Recent Files Types
+// ============================================================================
+
+export interface RecentFile {
+  path: string;
+  name: string;
+  lastOpened: string;
 }
 
 // ============================================================================

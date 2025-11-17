@@ -3,6 +3,10 @@ import path from 'path';
 import { registerAllHandlers } from './ipc';
 import { localStorage } from './services/LocalStorage';
 import { registerProtocolHandler } from './protocol/notoProtocol';
+import { initializeSearchService } from './ipc/search-handlers';
+import { initializeSettingsService } from './ipc/settings-handlers';
+import { initializeRecentFilesService } from './ipc/recent-handlers';
+import { initializeExportService } from './ipc/export-handlers';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -43,6 +47,22 @@ app.whenReady().then(async () => {
   // Initialize storage
   await localStorage.initialize();
   console.log('✓ Local storage initialized at:', localStorage.getWorkspacePath());
+
+  // Initialize settings service
+  initializeSettingsService(app.getPath('userData'));
+  console.log('✓ Settings service initialized');
+
+  // Initialize search service
+  initializeSearchService(localStorage.getWorkspacePath());
+  console.log('✓ Search service initialized');
+
+  // Initialize recent files service
+  initializeRecentFilesService(app.getPath('userData'), localStorage.getWorkspacePath());
+  console.log('✓ Recent files service initialized');
+
+  // Initialize export service
+  initializeExportService(localStorage.getWorkspacePath());
+  console.log('✓ Export service initialized');
 
   // Register custom noto:// protocol
   registerProtocolHandler();
