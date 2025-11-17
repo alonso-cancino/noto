@@ -103,7 +103,7 @@ export function markdownToPlainText(content: string): string {
  */
 export function countWords(content: string): number {
   const plainText = markdownToPlainText(content);
-  const words = plainText.split(/\s+/).filter(word => word.length > 0);
+  const words = plainText.split(/\s+/).filter((word) => word.length > 0);
   return words.length;
 }
 

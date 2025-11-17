@@ -6,7 +6,7 @@ import { StatusBar } from '../StatusBar';
 
 export const Layout: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<FileMetadata | null>(null);
-  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [sidebarVisible, _setSidebarVisible] = useState(true);
   const [wordCount, setWordCount] = useState(0);
   const [isDirty, setIsDirty] = useState(false);
 
@@ -28,28 +28,18 @@ export const Layout: React.FC = () => {
         {/* Sidebar */}
         {sidebarVisible && (
           <div className="w-64 border-r border-vscode-border flex-shrink-0">
-            <FileExplorer
-              onFileSelect={handleFileSelect}
-              selectedPath={selectedFile?.path}
-            />
+            <FileExplorer onFileSelect={handleFileSelect} selectedPath={selectedFile?.path} />
           </div>
         )}
 
         {/* Editor pane */}
         <div className="flex-1">
-          <EditorPane
-            file={selectedFile}
-            onEditorStateChange={handleEditorStateChange}
-          />
+          <EditorPane file={selectedFile} onEditorStateChange={handleEditorStateChange} />
         </div>
       </div>
 
       {/* Status bar */}
-      <StatusBar
-        currentFile={selectedFile?.path}
-        wordCount={wordCount}
-        isDirty={isDirty}
-      />
+      <StatusBar currentFile={selectedFile?.path} wordCount={wordCount} isDirty={isDirty} />
     </div>
   );
 };

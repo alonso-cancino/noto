@@ -8,13 +8,14 @@ import type { IpcHandlers, IpcEvents } from '../shared/types';
 
 // Create type-safe IPC API
 const api: {
-  [K in keyof IpcHandlers]: (...args: Parameters<IpcHandlers[K]>) => ReturnType<IpcHandlers[K]>
+  [K in keyof IpcHandlers]: (...args: Parameters<IpcHandlers[K]>) => ReturnType<IpcHandlers[K]>;
 } = {
   // File operations
   'file:read': (path: string) => ipcRenderer.invoke('file:read', path),
   'file:write': (path: string, content: string) => ipcRenderer.invoke('file:write', path, content),
   'file:delete': (path: string) => ipcRenderer.invoke('file:delete', path),
-  'file:rename': (oldPath: string, newPath: string) => ipcRenderer.invoke('file:rename', oldPath, newPath),
+  'file:rename': (oldPath: string, newPath: string) =>
+    ipcRenderer.invoke('file:rename', oldPath, newPath),
   'file:list': (folderPath?: string) => ipcRenderer.invoke('file:list', folderPath),
   'file:create': (path: string, type) => ipcRenderer.invoke('file:create', path, type),
 
@@ -27,9 +28,12 @@ const api: {
 
   // PDF annotation operations
   'pdf:getAnnotations': (pdfPath: string) => ipcRenderer.invoke('pdf:getAnnotations', pdfPath),
-  'pdf:addAnnotation': (pdfPath: string, annotation) => ipcRenderer.invoke('pdf:addAnnotation', pdfPath, annotation),
-  'pdf:updateAnnotation': (pdfPath: string, annotation) => ipcRenderer.invoke('pdf:updateAnnotation', pdfPath, annotation),
-  'pdf:deleteAnnotation': (pdfPath: string, annotationId: string) => ipcRenderer.invoke('pdf:deleteAnnotation', pdfPath, annotationId),
+  'pdf:addAnnotation': (pdfPath: string, annotation) =>
+    ipcRenderer.invoke('pdf:addAnnotation', pdfPath, annotation),
+  'pdf:updateAnnotation': (pdfPath: string, annotation) =>
+    ipcRenderer.invoke('pdf:updateAnnotation', pdfPath, annotation),
+  'pdf:deleteAnnotation': (pdfPath: string, annotationId: string) =>
+    ipcRenderer.invoke('pdf:deleteAnnotation', pdfPath, annotationId),
 
   // Search operations
   'search:query': (query: string) => ipcRenderer.invoke('search:query', query),
@@ -42,7 +46,8 @@ const api: {
   // Citation operations
   'citation:create': (annotation, targetPath, insertPosition) =>
     ipcRenderer.invoke('citation:create', annotation, targetPath, insertPosition),
-  'citation:getBacklinks': (pdfPath: string) => ipcRenderer.invoke('citation:getBacklinks', pdfPath),
+  'citation:getBacklinks': (pdfPath: string) =>
+    ipcRenderer.invoke('citation:getBacklinks', pdfPath),
 
   // App operations
   'app:getVersion': () => ipcRenderer.invoke('app:getVersion'),
@@ -51,20 +56,15 @@ const api: {
 
 // Event listeners
 const events = {
-  on: <K extends keyof IpcEvents>(
-    channel: K,
-    listener: IpcEvents[K]
-  ) => {
+  on: <K extends keyof IpcEvents>(channel: K, listener: IpcEvents[K]) => {
     ipcRenderer.on(channel, (_event, ...args) => {
       // @ts-expect-error - TypeScript struggles with variadic args here
       listener(...args);
     });
   },
 
-  off: <K extends keyof IpcEvents>(
-    channel: K,
-    listener: IpcEvents[K]
-  ) => {
+  off: <K extends keyof IpcEvents>(channel: K, listener: IpcEvents[K]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ipcRenderer.removeListener(channel, listener as any);
   },
 };

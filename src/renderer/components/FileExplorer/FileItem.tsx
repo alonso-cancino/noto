@@ -8,12 +8,7 @@ interface FileItemProps {
   depth?: number;
 }
 
-export const FileItem: React.FC<FileItemProps> = ({
-  file,
-  onSelect,
-  isSelected,
-  depth = 0,
-}) => {
+export const FileItem: React.FC<FileItemProps> = ({ file, onSelect, isSelected, depth = 0 }) => {
   const handleClick = () => {
     if (file.type !== 'folder') {
       onSelect(file);

@@ -1,5 +1,7 @@
 # Noto
 
+![CI](https://github.com/yourusername/noto/workflows/CI/badge.svg)
+
 A desktop research and note-taking application for academic workflows. Combines markdown editing with PDF annotation, citations, and cloud sync. Built for researchers, students, and anyone working with academic papers and technical documentation.
 
 ## Current Status
