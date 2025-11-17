@@ -46,10 +46,7 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedPath }
     return (
       <div className="p-4">
         <div className="text-red-400 mb-2">Error: {error}</div>
-        <button
-          onClick={handleRefresh}
-          className="text-vscode-accent hover:underline"
-        >
+        <button onClick={handleRefresh} className="text-vscode-accent hover:underline">
           Retry
         </button>
       </div>

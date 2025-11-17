@@ -7,11 +7,8 @@ interface FileExplorerProps {
   selectedPath?: string;
 }
 
-export const FileExplorer: React.FC<FileExplorerProps> = ({
-  onFileSelect,
-  selectedPath,
-}) => {
-  const [showNewFileDialog, setShowNewFileDialog] = useState(false);
+export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, selectedPath }) => {
+  const [_showNewFileDialog, _setShowNewFileDialog] = useState(false);
 
   const handleNewFile = async () => {
     const fileName = prompt('Enter file name (e.g., "notes.md"):');
@@ -39,7 +36,9 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
       window.location.reload(); // Temporary - will add proper refresh later
     } catch (error) {
       console.error('Error creating folder:', error);
-      alert('Failed to create folder: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      alert(
+        'Failed to create folder: ' + (error instanceof Error ? error.message : 'Unknown error')
+      );
     }
   };
 
@@ -47,9 +46,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
     <div className="h-full flex flex-col bg-vscode-sidebar">
       {/* Header */}
       <div className="flex items-center justify-between p-2 border-b border-vscode-border">
-        <span className="text-xs text-vscode-text-secondary uppercase tracking-wide">
-          Explorer
-        </span>
+        <span className="text-xs text-vscode-text-secondary uppercase tracking-wide">Explorer</span>
         <div className="flex gap-1">
           <button
             onClick={handleNewFile}
@@ -57,7 +54,12 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
             title="New File"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
           </button>
           <button
@@ -66,7 +68,12 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
             title="New Folder"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+              />
             </svg>
           </button>
         </div>

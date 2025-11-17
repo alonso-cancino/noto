@@ -13,6 +13,9 @@ out/
 
 # Testing
 coverage/
+.eslintcache
+playwright-report/
+test-results/
 
 # Environment variables
 .env

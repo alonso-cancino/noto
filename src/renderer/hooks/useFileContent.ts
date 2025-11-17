@@ -100,16 +100,12 @@ export function useFileContent({
   // Load content when file path changes
   useEffect(() => {
     // Save previous file before switching
-    if (
-      currentFilePathRef.current &&
-      currentFilePathRef.current !== filePath &&
-      isDirty
-    ) {
+    if (currentFilePathRef.current && currentFilePathRef.current !== filePath && isDirty) {
       save();
     }
 
     loadContent();
-  }, [filePath, loadContent]);
+  }, [filePath, loadContent, isDirty, save]);
 
   // Save before unmount
   useEffect(() => {
