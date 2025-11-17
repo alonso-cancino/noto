@@ -29,8 +29,10 @@
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
     "electron-log": "^5.0.1",
-    "electron-store": "^8.1.0",
+    "electron-store": "^8.2.0",
+    "googleapis": "^166.0.0",
     "highlight.js": "^11.9.0",
+    "idb": "^8.0.3",
     "katex": "^0.16.9",
     "markdown-it": "^13.0.2",
     "markdown-it-katex": "^2.0.3",

@@ -8,16 +8,16 @@
 
 ## Current Status
 
-**Completion:** 5/8 Phases (62.5%)
+**Completion:** 6/8 Phases (75%)
 
 - ✅ **Phase 0:** CI/CD & Testing (Complete)
 - ✅ **Phase 1:** Foundation & File System (Complete)
 - ✅ **Phase 2:** Markdown Editor (Complete)
 - ✅ **Phase 3:** PDF Viewer (Complete)
 - ✅ **Phase 4:** PDF Annotations (Complete)
-- 🚧 **Phase 5:** Citation System (Next)
-- 🚧 **Phase 6:** Google Drive Sync
-- 🚧 **Phase 7:** Polish & Features
+- ✅ **Phase 5:** Citation System (Complete)
+- ✅ **Phase 6:** Google Drive Sync (Complete)
+- 🚧 **Phase 7:** Polish & Features (Next)
 - 🚧 **Phase 8:** Build & Distribution
 
 ---
@@ -106,13 +106,13 @@ For complete development plans, see:
 - Context menu for edit/delete/color change
 - NoteEditDialog for editing annotation notes
 
-### 🚧 Phase 5: Citation System (NEXT)
+### ✅ Phase 5: Citation System (Complete)
 
-**Status:** Not Started
-**Estimated Time:** 2 weeks
+**Status:** 100% Complete
+**Time Spent:** 2 weeks
 **PRs:** PR-021 through PR-025
 
-**Goals:**
+**Delivered:**
 - Custom `noto://` protocol handler
 - Citation formatting service
 - "Quote in Note" feature
@@ -122,32 +122,30 @@ For complete development plans, see:
 **Key Feature:**
 Quote PDF highlights directly into markdown with bidirectional links.
 
-### 🚧 Phase 6: Google Drive Sync (After Phase 5)
+### ✅ Phase 6: Google Drive Sync (Complete)
 
-**Status:** Not Started
-**Estimated Time:** 3 weeks
+**Status:** 100% Complete
+**Time Spent:** 3 weeks
 **PRs:** PR-026 through PR-035
 
-**⚠️ Most Complex Phase**
+**Delivered:**
+- OAuth 2.0 authentication service with token encryption
+- Google Drive API integration (list, upload, download, changes)
+- IndexedDB cache layer for offline support
+- Sync queue with exponential backoff retry logic
+- Sync engine with upload/download orchestration
+- Conflict resolution (last-write-wins, merge, manual)
+- Background watcher with 30-second polling
+- Sync status indicators in UI
+- Folder selection UI with create folder support
 
-**Goals:**
-- Google Cloud Console setup
-- OAuth 2.0 authentication
-- Google Drive API integration
-- IndexedDB cache layer
-- Sync engine (upload/download)
-- Sync queue with retry logic
-- Conflict resolution
-- Background watcher (poll every 30s)
-- Sync status indicators
-- Folder selection UI
+**Key Features:**
+- Three-tier architecture (Drive → IndexedDB → Memory)
+- Offline-first design
+- Automatic conflict resolution for annotations
+- Secure token storage with Electron safeStorage
 
-**Prerequisites:**
-- Google Cloud project
-- OAuth credentials
-- Drive API enabled
-
-### 🚧 Phase 7: Polish & Features (After Phase 6)
+### 🚧 Phase 7: Polish & Features (Next)
 
 **Status:** Not Started
 **Estimated Time:** 2 weeks
