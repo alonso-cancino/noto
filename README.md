@@ -1,8 +1,13 @@
 # Noto
 
 ![CI](https://github.com/yourusername/noto/workflows/CI/badge.svg)
+![Coverage](https://img.shields.io/codecov/c/github/yourusername/noto)
 
 A desktop research and note-taking application for academic workflows. Combines markdown editing with PDF annotation, citations, and cloud sync. Built for researchers, students, and anyone working with academic papers and technical documentation.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## Current Status
 

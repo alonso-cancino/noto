@@ -1,7 +1,7 @@
 # Noto Development Roadmap - 52 PRs to v1.0.0
 
-**Last Updated:** 2025-01-17
-**Current Status:** Phase 1-2 Complete (Phases 0, 3-8 remaining)
+**Last Updated:** 2025-11-17
+**Current Status:** Phase 0 Complete, Phase 3 In Progress (PRs 1-8 done)
 **Estimated Timeline:** 10-16 weeks (depending on parallelization)
 
 This document provides the complete breakdown of all 52 PRs needed to complete Noto v1.0.0, including Windows installer support.
@@ -12,14 +12,14 @@ This document provides the complete breakdown of all 52 PRs needed to complete N
 
 | Phase | PRs | Status | Estimated Time |
 |-------|-----|--------|----------------|
-| Phase 0: CI/CD & Testing | 5 PRs | 🚧 Not Started | 2 weeks |
-| Phase 3: PDF Viewer | 7 PRs | 🚧 Not Started | 2 weeks |
+| Phase 0: CI/CD & Testing | 5 PRs | ✅ Complete (PR-001 to PR-005) | 2 weeks |
+| Phase 3: PDF Viewer | 7 PRs | 🚧 In Progress (PR-006 to PR-008 done) | 2 weeks |
 | Phase 4: PDF Annotations | 8 PRs | 🚧 Not Started | 2 weeks |
 | Phase 5: Citation System | 5 PRs | 🚧 Not Started | 2 weeks |
 | Phase 6: Google Drive Sync | 10 PRs | 🚧 Not Started | 3 weeks |
 | Phase 7: Polish & Features | 10 PRs | 🚧 Not Started | 2 weeks |
 | Phase 8: Build & Distribution | 7 PRs | 🚧 Not Started | 3 weeks |
-| **Total** | **52 PRs** | - | **16 weeks** |
+| **Total** | **52 PRs** | **8/52 Complete** | **16 weeks** |
 
 With parallelization (6-10 instances): **10-12 weeks**
 

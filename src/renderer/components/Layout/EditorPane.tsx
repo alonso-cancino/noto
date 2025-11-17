@@ -1,6 +1,7 @@
 import React from 'react';
 import type { FileMetadata } from '../../../shared/types';
 import { Editor } from '../Editor';
+import { PDFViewer } from '../PDFViewer';
 
 interface EditorPaneProps {
   file: FileMetadata | null;
@@ -48,8 +49,15 @@ export const EditorPane: React.FC<EditorPaneProps> = ({ file, onEditorStateChang
                 onEditorStateChange?.(wordCount, isDirty);
               }}
             />
+          ) : file.name.endsWith('.pdf') ? (
+            <PDFViewer
+              filePath={file.path}
+              onError={(error) => {
+                console.error('PDF viewer error:', error);
+              }}
+            />
           ) : (
-            <PDFViewerPlaceholder fileName={file.name} />
+            <UnsupportedFileType fileName={file.name} />
           )}
         </div>
       </div>
@@ -57,19 +65,17 @@ export const EditorPane: React.FC<EditorPaneProps> = ({ file, onEditorStateChang
   );
 };
 
-const PDFViewerPlaceholder: React.FC<{ fileName: string }> = ({ fileName }) => {
+const UnsupportedFileType: React.FC<{ fileName: string }> = ({ fileName }) => {
   return (
     <div className="flex flex-col items-center justify-center h-full text-vscode-text-secondary">
       <div className="text-6xl mb-4">📄</div>
       <p className="text-lg mb-2">{fileName}</p>
-      <p className="text-sm">PDF viewer will be integrated in Phase 3</p>
+      <p className="text-sm">Unsupported file type</p>
       <div className="text-xs mt-4 opacity-50">
-        <p>Features coming:</p>
+        <p>Supported file types:</p>
         <ul className="list-disc ml-6 mt-1">
-          <li>Page navigation</li>
-          <li>Zoom controls</li>
-          <li>Annotations</li>
-          <li>Text highlighting</li>
+          <li>Markdown (.md)</li>
+          <li>PDF (.pdf)</li>
         </ul>
       </div>
     </div>

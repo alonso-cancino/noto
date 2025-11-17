@@ -1,0 +1,88 @@
+import React, { useState, useEffect } from 'react';
+import { PDFPageProxy } from 'pdfjs-dist/types/src/display/api';
+import { usePDF } from '../../hooks/usePDF';
+import { PDFCanvas } from './PDFCanvas';
+import { PageNavigation } from './PageNavigation';
+import { ZoomControls } from './ZoomControls';
+import { PDFViewerProps } from './types';
+
+export function PDFViewer({ filePath, onError }: PDFViewerProps): JSX.Element {
+  const { pdf, loading, error, currentPage, totalPages, getPage } =
+    usePDF(filePath);
+  const [currentPageProxy, setCurrentPageProxy] = useState<PDFPageProxy | null>(
+    null
+  );
+  const [scale, setScale] = useState<number>(1.0);
+
+  // Load page when PDF is ready or page changes
+  useEffect(() => {
+    if (pdf && currentPage > 0) {
+      getPage(currentPage).then((page) => {
+        setCurrentPageProxy(page);
+      });
+    }
+  }, [pdf, currentPage, getPage]);
+
+  const handlePageChange = (pageNumber: number) => {
+    getPage(pageNumber).then((page) => {
+      if (page) {
+        setCurrentPageProxy(page);
+      }
+    });
+  };
+
+  // Call error callback if provided
+  useEffect(() => {
+    if (error && onError) {
+      onError(new Error(error));
+    }
+  }, [error, onError]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-gray-500">Loading PDF...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-red-500">
+          <div className="font-semibold mb-2">Error loading PDF</div>
+          <div className="text-sm">{error}</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!pdf || !currentPageProxy) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-gray-500">No PDF loaded</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pdf-viewer flex flex-col h-full bg-gray-100">
+      {/* Toolbar with Page Navigation and Zoom Controls */}
+      <div className="flex items-center justify-between bg-gray-800">
+        <PageNavigation
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+        <ZoomControls scale={scale} onScaleChange={setScale} />
+      </div>
+
+      {/* PDF Content */}
+      <div className="pdf-viewer-content flex-1 overflow-auto p-4">
+        <div className="flex justify-center">
+          <PDFCanvas page={currentPageProxy} scale={scale} />
+        </div>
+      </div>
+    </div>
+  );
+}
