@@ -196,7 +196,7 @@ export class SearchService {
 
   private findMatches(
     entry: IndexEntry,
-    queryLower: string,
+    _queryLower: string,
     queryWords: string[]
   ): SearchMatch[] {
     const matches: SearchMatch[] = [];

@@ -29,6 +29,11 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({ className = '' }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [queueSize, setQueueSize] = useState(0);
 
+  // Prevent unused variable warnings - these will be used when sync is implemented
+  void setLastSyncTime;
+  void setErrorMessage;
+  void setQueueSize;
+
   useEffect(() => {
     // Listen to sync events from main process
     // These would be sent via IPC

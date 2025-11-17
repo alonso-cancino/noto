@@ -210,8 +210,8 @@ export function NoteEditDialog({
           <div className="mb-3">
             <div className="text-xs text-gray-400 mb-1">Highlighted Text:</div>
             <div className="text-sm text-gray-300 bg-gray-700 p-2 rounded italic">
-              "{annotation.text.substring(0, 200)}
-              {annotation.text.length > 200 && '..."'}
+              &quot;{annotation.text.substring(0, 200)}
+              {annotation.text.length > 200 && '...&quot;'}
             </div>
           </div>
         )}

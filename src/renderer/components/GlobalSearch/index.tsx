@@ -122,7 +122,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, onF
 
           {!isSearching && query && results.length === 0 && (
             <div className="p-4 text-vscode-text-secondary text-center">
-              No results found for "{query}"
+              No results found for &quot;{query}&quot;
             </div>
           )}
 

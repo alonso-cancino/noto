@@ -121,7 +121,8 @@ export class SyncQueue extends EventEmitter {
     // Process operations one at a time
     while (this.queue.size > 0 && this.isOnline) {
       // Get first operation (FIFO)
-      const [path, operation] = this.queue.entries().next().value;
+      const entry = this.queue.entries().next().value as [string, UploadOperation];
+      const [path, operation] = entry;
 
       try {
         this.emit('upload:start', path);
@@ -162,12 +163,8 @@ export class SyncQueue extends EventEmitter {
    */
   setProcessor(processor: (operation: UploadOperation) => Promise<void>): void {
     this.processOperation = async (operation: UploadOperation): Promise<boolean> => {
-      try {
-        await processor(operation);
-        return false; // Success
-      } catch (error) {
-        throw error; // Will be caught and handled
-      }
+      await processor(operation);
+      return false; // Success
     };
   }
 

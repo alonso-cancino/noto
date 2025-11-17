@@ -3,7 +3,7 @@
  * Shows which note files cite annotations in the current PDF
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Annotation } from '../../../shared/types';
 import { citationService } from '../../services/CitationService';
 import path from 'path-browserify';
@@ -29,11 +29,7 @@ export function BacklinksPanel({
   const [backlinks, setBacklinks] = useState<BacklinkInfo[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadBacklinks();
-  }, [pdfPath, annotations]);
-
-  const loadBacklinks = async () => {
+  const loadBacklinks = useCallback(async () => {
     setLoading(true);
     try {
       // Get backlinks map (annotation ID -> note paths)
@@ -74,7 +70,11 @@ export function BacklinksPanel({
     } finally {
       setLoading(false);
     }
-  };
+  }, [pdfPath, annotations]);
+
+  useEffect(() => {
+    loadBacklinks();
+  }, [loadBacklinks]);
 
   const handleNoteClick = (notePath: string) => {
     if (onNoteClick) {
@@ -114,7 +114,7 @@ export function BacklinksPanel({
           No notes cite this PDF yet.
           <br />
           <span className="text-xs mt-2 block">
-            Use "Quote in Note" to create citations
+            Use &quot;Quote in Note&quot; to create citations
           </span>
         </div>
       </div>

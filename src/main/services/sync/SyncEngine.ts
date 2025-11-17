@@ -57,7 +57,6 @@ export class SyncEngine extends EventEmitter {
   private getFileCallback: ((path: string) => Promise<FileState | null>) | null = null;
   private saveFileCallback: ((state: FileState) => Promise<void>) | null = null;
   private deleteFileCallback: ((path: string) => Promise<void>) | null = null;
-  private getAllFilesCallback: (() => Promise<FileState[]>) | null = null;
 
   constructor(driveService: DriveService) {
     super();
@@ -79,7 +78,7 @@ export class SyncEngine extends EventEmitter {
       this.emit('sync:uploaded', path);
     });
 
-    this.uploadQueue.on('upload:failed', (path, error) => {
+    this.uploadQueue.on('upload:failed', (_path, error) => {
       this.emit('sync:error', error);
     });
   }
@@ -91,12 +90,10 @@ export class SyncEngine extends EventEmitter {
     getFile: (path: string) => Promise<FileState | null>;
     saveFile: (state: FileState) => Promise<void>;
     deleteFile: (path: string) => Promise<void>;
-    getAllFiles: () => Promise<FileState[]>;
   }): void {
     this.getFileCallback = callbacks.getFile;
     this.saveFileCallback = callbacks.saveFile;
     this.deleteFileCallback = callbacks.deleteFile;
-    this.getAllFilesCallback = callbacks.getAllFiles;
   }
 
   /**

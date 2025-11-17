@@ -51,6 +51,17 @@ const api: {
   'citation:getBacklinks': (pdfPath: string) =>
     ipcRenderer.invoke('citation:getBacklinks', pdfPath),
 
+  // Recent files operations
+  'recent:get': () => ipcRenderer.invoke('recent:get'),
+  'recent:add': (filePath: string) => ipcRenderer.invoke('recent:add', filePath),
+  'recent:clear': () => ipcRenderer.invoke('recent:clear'),
+
+  // Export operations
+  'export:markdown-to-html': (filePath: string, outputPath?: string) =>
+    ipcRenderer.invoke('export:markdown-to-html', filePath, outputPath),
+  'export:markdown-to-pdf': (filePath: string, outputPath?: string) =>
+    ipcRenderer.invoke('export:markdown-to-pdf', filePath, outputPath),
+
   // App operations
   'app:getVersion': () => ipcRenderer.invoke('app:getVersion'),
   'app:openExternal': (url: string) => ipcRenderer.invoke('app:openExternal', url),

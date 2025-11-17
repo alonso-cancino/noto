@@ -220,7 +220,7 @@ export class DriveService {
     return {
       changes,
       newStartPageToken: response.data.newStartPageToken!,
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken || undefined,
     };
   }
 

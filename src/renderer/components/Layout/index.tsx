@@ -11,7 +11,7 @@
  * - Export functionality (PR-042)
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { FileMetadata } from '../../../shared/types';
 import { FileExplorer } from '../FileExplorer';
 import { EditorPane } from './EditorPane';
@@ -35,7 +35,7 @@ interface Tab {
 
 export const Layout: React.FC = () => {
   // UI state
-  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [sidebarVisible, _setSidebarVisible] = useState(true);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -119,7 +119,7 @@ export const Layout: React.FC = () => {
   };
 
   // Handle citation opening
-  const handleOpenCitation = async (data: {
+  const handleOpenCitation = useCallback(async (data: {
     pdfPath: string;
     page: number;
     annotationId?: string;
@@ -167,7 +167,7 @@ export const Layout: React.FC = () => {
     } catch (error) {
       console.error('Error handling citation:', error);
     }
-  };
+  }, [tabs]);
 
   // Listen for open-citation IPC events
   useEffect(() => {
@@ -175,7 +175,7 @@ export const Layout: React.FC = () => {
     return () => {
       window.events.off('open-citation', handleOpenCitation);
     };
-  }, [tabs]);
+  }, [handleOpenCitation]);
 
   // Listen for custom citation events
   useEffect(() => {
@@ -192,7 +192,7 @@ export const Layout: React.FC = () => {
     return () => {
       window.removeEventListener('open-citation', handler);
     };
-  }, [tabs]);
+  }, [handleOpenCitation]);
 
   // Listen for custom events (settings, export, etc.)
   useEffect(() => {

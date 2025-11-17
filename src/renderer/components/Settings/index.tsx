@@ -54,7 +54,7 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleChange = (key: keyof AppSettings, value: any) => {
+  const handleChange = (key: keyof AppSettings, value: AppSettings[typeof key]) => {
     if (!settings) return;
 
     setSettings({

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 interface PageNavigationProps {
   currentPage: number;
@@ -18,17 +18,17 @@ export function PageNavigation({
     setInputValue(currentPage.toString());
   }, [currentPage]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
     }
-  };
+  }, [currentPage, onPageChange]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentPage < totalPages) {
       onPageChange(currentPage + 1);
     }
-  };
+  }, [currentPage, totalPages, onPageChange]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -75,7 +75,7 @@ export function PageNavigation({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, totalPages]); // Re-bind when page changes
+  }, [handleNext, handlePrevious]); // Re-bind when handlers change
 
   return (
     <div className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2">
