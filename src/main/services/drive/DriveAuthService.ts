@@ -10,6 +10,7 @@
 
 import { BrowserWindow, safeStorage } from 'electron';
 import { google } from 'googleapis';
+import type { OAuth2Client } from 'google-auth-library';
 import Store from 'electron-store';
 
 export interface OAuthTokens {
@@ -27,7 +28,7 @@ export interface GoogleCredentials {
 }
 
 export class DriveAuthService {
-  private oauth2Client: any;
+  private oauth2Client: OAuth2Client;
   private store: Store;
   private credentials: GoogleCredentials;
 

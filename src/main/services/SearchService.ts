@@ -10,7 +10,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import type { SearchResult, SearchMatch, FileType } from '../../shared/types';
+import type { SearchResult, SearchMatch, FileType, Annotation } from '../../shared/types';
 
 interface IndexEntry {
   filePath: string;
@@ -85,7 +85,7 @@ export class SearchService {
 
           // Extract text from annotations and notes
           content = annotationFile.annotations
-            .map((ann: any) => {
+            .map((ann: Annotation) => {
               const parts = [];
               if (ann.text) parts.push(ann.text);
               if (ann.note) parts.push(ann.note);

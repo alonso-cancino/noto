@@ -26,7 +26,7 @@ export const DriveSetup: React.FC<DriveSetupProps> = ({
   const [step, setStep] = useState<SetupStep>('signin');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [_selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [syncProgress, setSyncProgress] = useState(0);
 
   const handleSignIn = async () => {
@@ -48,7 +48,7 @@ export const DriveSetup: React.FC<DriveSetupProps> = ({
     }
   };
 
-  const handleFolderSelected = async (folderId: string, folderPath: string) => {
+  const handleFolderSelected = async (folderId: string, _folderPath: string) => {
     setSelectedFolderId(folderId);
     setStep('syncing');
 

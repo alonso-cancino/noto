@@ -43,8 +43,8 @@ export class SettingsService {
       };
 
       console.log('Settings loaded:', this.settingsPath);
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
         // File doesn't exist, use defaults and save
         console.log('No settings file found, using defaults');
         await this.save();

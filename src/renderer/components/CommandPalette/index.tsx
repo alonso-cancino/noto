@@ -10,7 +10,7 @@
  * - Triggered by Cmd/Ctrl+P
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { FileMetadata, RecentFile } from '../../../shared/types';
 
 interface Command {
@@ -109,10 +109,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     }
 
     setSelectedIndex(0);
-  }, [query, files, recentFiles]);
+  }, [query, files, recentFiles, getCommands]);
 
   // Get available commands
-  const getCommands = (): Command[] => {
+  const getCommands = useCallback((): Command[] => {
     return [
       {
         id: 'search',
@@ -162,7 +162,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         icon: '📕',
       },
     ];
-  };
+  }, [onClose]);
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {

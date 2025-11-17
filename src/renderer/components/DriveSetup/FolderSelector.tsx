@@ -59,11 +59,11 @@ export const FolderSelector: React.FC<FolderSelectorProps> = ({
     }
   };
 
-  const loadSubfolders = async (folderId: string) => {
+  const loadSubfolders = async (_folderId: string) => {
     setIsLoading(true);
     try {
       // TODO: Call IPC to list subfolders
-      // const subfolders = await window.api['drive:list-folders'](folderId);
+      // const subfolders = await window.api['drive:list-folders'](_folderId);
       // setFolders(subfolders);
 
       // Mock data

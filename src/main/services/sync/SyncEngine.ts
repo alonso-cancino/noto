@@ -27,7 +27,8 @@ export interface SyncEngineEvents {
   'sync:quota-exceeded': (message: string) => void;
 }
 
-export declare interface SyncEngine {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export interface SyncEngine {
   on<U extends keyof SyncEngineEvents>(event: U, listener: SyncEngineEvents[U]): this;
   emit<U extends keyof SyncEngineEvents>(event: U, ...args: Parameters<SyncEngineEvents[U]>): boolean;
 }
@@ -41,6 +42,7 @@ export interface FileState {
   lastSyncTime?: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class SyncEngine extends EventEmitter {
   private drive: DriveService;
   private uploadQueue: SyncQueue;

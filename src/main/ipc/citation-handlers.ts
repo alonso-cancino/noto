@@ -22,9 +22,9 @@ export function registerCitationHandlers() {
     'citation:create',
     async (
       _event,
-      annotation: Annotation,
-      targetPath: string,
-      insertPosition?: number
+      _annotation: Annotation,
+      _targetPath: string,
+      _insertPosition?: number
     ): Promise<void> => {
       try {
         // This is handled in the renderer for now

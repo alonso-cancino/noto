@@ -41,8 +41,8 @@ export class RecentFilesService {
       await this.cleanupDeletedFiles();
 
       console.log(`Loaded ${this.recentFiles.length} recent files`);
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
         console.log('No recent files found, starting fresh');
         this.recentFiles = [];
       } else {
