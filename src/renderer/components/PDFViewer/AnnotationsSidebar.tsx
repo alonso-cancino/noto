@@ -11,6 +11,7 @@ export interface AnnotationsSidebarProps {
   onAnnotationClick?: (annotation: Annotation) => void;
   onAnnotationEdit?: (annotation: Annotation) => void;
   onAnnotationDelete?: (annotation: Annotation) => void;
+  onAnnotationQuote?: (annotation: Annotation) => void;
 }
 
 export function AnnotationsSidebar({
@@ -18,6 +19,7 @@ export function AnnotationsSidebar({
   onAnnotationClick,
   onAnnotationEdit,
   onAnnotationDelete,
+  onAnnotationQuote,
 }: AnnotationsSidebarProps): JSX.Element {
   // Group annotations by page
   const annotationsByPage = useMemo(() => {
@@ -114,6 +116,19 @@ export function AnnotationsSidebar({
 
           {/* Action Buttons (shown on hover) */}
           <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+            {onAnnotationQuote && annotation.text && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAnnotationQuote(annotation);
+                }}
+                className="px-2 py-1 bg-blue-600 hover:bg-blue-500 rounded text-xs"
+                title="Quote in note"
+                data-testid={`quote-${annotation.id}`}
+              >
+                📝
+              </button>
+            )}
             {onAnnotationEdit && (
               <button
                 onClick={(e) => {
