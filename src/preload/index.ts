@@ -18,6 +18,8 @@ const api: {
     ipcRenderer.invoke('file:rename', oldPath, newPath),
   'file:list': (folderPath?: string) => ipcRenderer.invoke('file:list', folderPath),
   'file:create': (path: string, type) => ipcRenderer.invoke('file:create', path, type),
+  'file:import-pdf': (fileName: string, base64Data: string) =>
+    ipcRenderer.invoke('file:import-pdf', fileName, base64Data),
 
   // Google Drive operations
   'drive:auth': () => ipcRenderer.invoke('drive:auth'),

@@ -1,8 +1,8 @@
 # Noto Implementation Status
 
-**Last Updated:** 2025-01-17
-**Version:** 0.2.0-alpha
-**Completion:** 2/8 Phases (25%)
+**Last Updated:** 2025-11-17
+**Version:** 0.5.0-alpha
+**Completion:** 5/8 Phases (62.5%)
 
 This document provides an accurate assessment of what's currently implemented vs. what's planned.
 
@@ -16,23 +16,27 @@ This document provides an accurate assessment of what's currently implemented vs
 - ✅ Local file storage system
 - ✅ Auto-save functionality
 - ✅ Code syntax highlighting
+- ✅ PDF viewing with navigation and zoom
+- ✅ PDF text selection and search
+- ✅ PDF annotations (highlights, notes, areas)
+- ✅ Annotation editing and management
+- ✅ CI/CD pipeline with Jest and Playwright
 
 **What Doesn't Work Yet:**
-- ❌ PDF viewing
-- ❌ PDF annotations
-- ❌ Citations
+- ❌ Citation system (noto:// protocol, quote in notes)
 - ❌ Google Drive sync
-- ❌ Search
+- ❌ Full-text search across all files
 - ❌ Command palette
-- ❌ Installers
+- ❌ Settings UI
+- ❌ Installers and auto-updates
 
-**Ready for Development:**
-- ✅ All dependencies installed (pdfjs-dist, monaco-editor, etc.)
+**Development Ready:**
+- ✅ All dependencies installed
 - ✅ Project structure in place
-- ✅ IPC infrastructure ready
+- ✅ IPC infrastructure complete
 - ✅ Type definitions complete
-- ❌ CI/CD not set up (Phase 0)
-- ❌ Testing framework not configured (Phase 0)
+- ✅ CI/CD set up with GitHub Actions
+- ✅ Testing framework configured (Jest + Playwright)
 
 ---
 
@@ -136,117 +140,112 @@ This document provides an accurate assessment of what's currently implemented vs
 
 ---
 
-### 🚧 Phase 0: CI/CD & Testing (NOT STARTED)
+### ✅ Phase 0: CI/CD & Testing (COMPLETE)
 
-**Status:** 0% Complete
-**Next Priority:** MUST DO BEFORE OTHER DEVELOPMENT
+**Status:** 100% Complete
+**Completed:** November 2025
 
-**Why This Matters:**
-All future PRs require:
-- Passing unit tests
-- Passing E2E tests
-- Lint checks
-- Successful builds
+**Implemented:**
+- [x] Jest unit testing framework with React Testing Library
+- [x] ESLint + Prettier code quality tools
+- [x] GitHub Actions CI pipeline
+- [x] Playwright E2E testing setup
+- [x] CONTRIBUTING.md and testing documentation
 
-**Dependencies Needed:**
-```json
-{
-  "jest": "^29.7.0",
-  "@testing-library/react": "^14.1.2",
-  "@testing-library/jest-dom": "^6.1.5",
-  "@playwright/test": "^1.40.0",
-  "eslint": "^8.54.0",
-  "prettier": "^3.1.0"
-}
-```
+**Files Created:**
+- `jest.config.js` - Jest configuration
+- `jest.setup.js` - Test environment setup
+- `.eslintrc.json` - Linting rules
+- `.prettierrc.json` - Code formatting rules
+- `.github/workflows/ci.yml` - CI/CD pipeline
+- `playwright.config.ts` - E2E test configuration
+- `docs/TESTING.md` - Testing guidelines
+- Example tests in `__tests__` directories
 
-**Files That Need to Be Created:**
-- `jest.config.js`
-- `jest.setup.js`
-- `.eslintrc.json`
-- `.prettierrc.json`
-- `.github/workflows/ci.yml`
-- `playwright.config.ts`
-- Example tests
-
-**PRs Required:**
-1. PR-001: Jest setup
-2. PR-002: ESLint/Prettier
-3. PR-003: GitHub Actions
-4. PR-004: Playwright E2E
-5. PR-005: Documentation
-
-**Estimated Time:** 2 weeks (or 1 week with 2-3 instances)
+**What Works:**
+- All tests run in CI on every push
+- Code is automatically linted and formatted
+- E2E tests validate critical user flows
+- Coverage reporting configured
+- PR template auto-fills on GitHub
 
 ---
 
-### 🚧 Phase 3: PDF Viewer (NOT STARTED)
+### ✅ Phase 3: PDF Viewer (COMPLETE)
 
-**Status:** 0% Complete
-**Dependencies:** Phase 0 must complete first
+**Status:** 100% Complete
+**Completed:** November 2025
 
-**Good News:**
-- ✅ `pdfjs-dist` already installed (v3.11.174)
-- ✅ `react-pdf` already installed (v7.5.1)
-- ✅ `pdf-lib` already installed (v1.17.1)
-- ✅ Types defined in `types.ts`
-- ✅ Placeholder in EditorPane ready to be replaced
+**Implemented:**
+- [x] PDF.js integration with worker configuration
+- [x] PDFViewer component with canvas rendering
+- [x] Page navigation (prev/next, jump to page, keyboard shortcuts)
+- [x] Zoom controls (50%-300%, fit-width, fit-page)
+- [x] Thumbnail sidebar with lazy rendering
+- [x] Text selection layer for copying text
+- [x] In-PDF search with result navigation
+- [x] Drag-and-drop PDF import
 
-**What Needs to Be Built:**
-- PDF.js integration and setup
-- PDFViewer component
-- Page navigation (prev/next, jump to page)
-- Zoom controls (fit-width, fit-page, custom %)
-- Thumbnail sidebar
-- Text selection layer
-- In-PDF search
-- Drag-and-drop PDF import
+**Files Created:**
+- `src/renderer/components/PDFViewer/index.tsx` - Main PDF viewer
+- `src/renderer/components/PDFViewer/PDFCanvas.tsx` - Canvas renderer
+- `src/renderer/components/PDFViewer/PageNavigation.tsx` - Page controls
+- `src/renderer/components/PDFViewer/ZoomControls.tsx` - Zoom UI
+- `src/renderer/components/PDFViewer/ThumbnailSidebar.tsx` - Page thumbnails
+- `src/renderer/components/PDFViewer/TextLayer.tsx` - Text selection
+- `src/renderer/components/PDFViewer/SearchBar.tsx` - PDF search
+- `src/renderer/hooks/usePDF.ts` - PDF loading hook
+- Tests in `__tests__/` directories
 
-**Files That Don't Exist Yet:**
-- `src/renderer/components/PDFViewer/` - entire directory missing
-- No PDF-related code exists
-
-**PRs Required:**
-- PR-006 through PR-012 (7 PRs)
-
-**Estimated Time:** 2 weeks (or less with parallel work)
-
-**Blocker:** Phase 0 must complete first (need testing infrastructure)
+**What Works:**
+- Full PDF viewing with all navigation features
+- Text can be selected and copied
+- Search highlights all matches
+- Thumbnails load on-demand for performance
+- Drag PDFs from desktop to import
 
 ---
 
-### 🚧 Phase 4: PDF Annotations (NOT STARTED)
+### ✅ Phase 4: PDF Annotations (COMPLETE)
 
-**Status:** 0% Complete
-**Dependencies:** Phase 3 must complete
+**Status:** 100% Complete
+**Completed:** November 2025
 
-**What Needs to Be Built:**
-- Annotation storage service
-- `.pdf.annotations.json` file handling
-- SVG overlay layer for rendering annotations
-- Highlight tool (5 colors)
-- Sticky note tool
-- Area selection tool
-- Annotations sidebar
-- Edit/delete annotations
+**Implemented:**
+- [x] AnnotationService with CRUD operations and caching
+- [x] JSON storage (`.pdf.annotations.json` files)
+- [x] SVG overlay layer for rendering annotations
+- [x] Highlight tool with text extraction (5 colors)
+- [x] Sticky note tool with click-to-place
+- [x] Area selection tool for figures/tables
+- [x] Annotations sidebar grouped by page
+- [x] Context menu for edit/delete/color change
+- [x] NoteEditDialog for editing annotation notes
 
-**Files That Don't Exist:**
-- `src/main/services/AnnotationService.ts`
-- `src/main/ipc/annotation-handlers.ts`
-- Annotation components
+**Files Created:**
+- `src/renderer/services/AnnotationService.ts` - CRUD operations, caching
+- `src/renderer/components/PDFViewer/AnnotationLayer.tsx` - SVG overlay renderer
+- `src/renderer/components/PDFViewer/AnnotationTools.tsx` - Tool system (highlight, note, area)
+- `src/renderer/components/PDFViewer/AnnotationToolbar.tsx` - Tool selection UI
+- `src/renderer/components/PDFViewer/AnnotationsSidebar.tsx` - Annotations list
+- `src/renderer/components/PDFViewer/AnnotationContextMenu.tsx` - Right-click menu, edit dialog
+- Tests in `__tests__/AnnotationService.test.ts` and `__tests__/AnnotationLayer.test.tsx`
+- Updated `PDFCanvas.tsx` to integrate annotation layer
 
-**Good News:**
-- ✅ Types already defined in `types.ts`:
-  - `Annotation` interface
-  - `AnnotationFile` interface
-  - `AnnotationType` enum
-  - `Rectangle` interface
-- ✅ IPC handlers defined (not implemented yet)
+**What Works:**
+- Click and drag to highlight text (extracts text from PDF.js)
+- Click to place sticky notes with custom text
+- Click and drag to select areas (for figures/tables)
+- 5 color options (yellow, green, blue, red, purple)
+- Annotations saved to `.filename.pdf.annotations.json` files
+- View all annotations in sidebar, grouped by page
+- Right-click annotations to edit/delete/change color
+- Annotations persist across app restarts
+- Cache system for fast loading
 
-**PRs Required:**
-- PR-013 through PR-020 (8 PRs)
-
-**Estimated Time:** 2 weeks
+**Dependencies Installed:**
+- `uuid` - For generating annotation IDs
+- `path-browserify` - For path manipulation in renderer
 
 ---
 

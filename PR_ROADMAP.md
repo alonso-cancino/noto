@@ -1,7 +1,7 @@
 # Noto Development Roadmap - 52 PRs to v1.0.0
 
 **Last Updated:** 2025-11-17
-**Current Status:** Phase 0 & Phase 3 Complete (PRs 1-12 done)
+**Current Status:** Phase 0, Phase 3, and Phase 4 Complete (PRs 1-20 done)
 **Estimated Timeline:** 10-16 weeks (depending on parallelization)
 
 This document provides the complete breakdown of all 52 PRs needed to complete Noto v1.0.0, including Windows installer support.
@@ -14,12 +14,12 @@ This document provides the complete breakdown of all 52 PRs needed to complete N
 |-------|-----|--------|----------------|
 | Phase 0: CI/CD & Testing | 5 PRs | ✅ Complete (PR-001 to PR-005) | 2 weeks |
 | Phase 3: PDF Viewer | 7 PRs | ✅ Complete (PR-006 to PR-012) | 2 weeks |
-| Phase 4: PDF Annotations | 8 PRs | 🚧 Not Started | 2 weeks |
+| Phase 4: PDF Annotations | 8 PRs | ✅ Complete (PR-013 to PR-020) | 2 weeks |
 | Phase 5: Citation System | 5 PRs | 🚧 Not Started | 2 weeks |
 | Phase 6: Google Drive Sync | 10 PRs | 🚧 Not Started | 3 weeks |
 | Phase 7: Polish & Features | 10 PRs | 🚧 Not Started | 2 weeks |
 | Phase 8: Build & Distribution | 7 PRs | 🚧 Not Started | 3 weeks |
-| **Total** | **52 PRs** | **12/52 Complete (23%)** | **16 weeks** |
+| **Total** | **52 PRs** | **20/52 Complete (38%)** | **16 weeks** |
 
 With parallelization (6-10 instances): **10-12 weeks**
 
@@ -613,25 +613,1138 @@ npm run test:e2e
 
 ---
 
-*Continuing with remaining 45 PRs in same detailed format...*
+### PR-008: Zoom Controls
+**Complexity:** Small (4 hours)
+**Dependencies:** PR-006
+**Can Parallelize:** Yes (parallel with PR-007)
 
-**Due to response length limits, I've shown the detailed format for the first 7 PRs. The complete PR_ROADMAP.md would continue with:**
+**Description:**
+Add zoom in/out controls to adjust PDF scale for better readability of small text or large diagrams.
 
-- PR-008 through PR-012 (Phase 3 remainder)
-- PR-013 through PR-020 (Phase 4 - Annotations)
-- PR-021 through PR-025 (Phase 5 - Citations)
-- PR-026 through PR-035 (Phase 6 - Sync)
-- PR-036 through PR-045 (Phase 7 - Polish)
-- PR-046 through PR-052 (Phase 8 - Distribution)
+**Files to Create:**
+- `src/renderer/components/PDFViewer/ZoomControls.tsx`
+  ```typescript
+  interface Props {
+    scale: number;
+    onScaleChange: (scale: number) => void;
+  }
+  ```
+- `src/renderer/components/PDFViewer/__tests__/ZoomControls.test.tsx`
 
-Each following the same detailed format with:
-- Complexity estimate
-- Dependencies
-- Parallelization status
-- Files to create/modify
-- Implementation details
-- Testing requirements
-- Acceptance criteria
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/index.tsx` - Integrate zoom controls
+- `src/renderer/components/PDFViewer/PDFCanvas.tsx` - Add scale state, apply to canvas rendering
+
+**Features:**
+- Zoom in button (+25% increments)
+- Zoom out button (-25% increments)
+- Reset to 100% button
+- Zoom levels: 50%, 75%, 100%, 125%, 150%, 200%, 300%
+- Display current zoom percentage
+- Keyboard shortcuts (Cmd/Ctrl + +/-, Cmd/Ctrl + 0)
+
+**Testing Requirements:**
+```bash
+npm run test
+# Zoom controls tests pass
+
+npm run dev
+# Can zoom in/out on PDF
+# Reset button returns to 100%
+```
+
+**Acceptance Criteria:**
+- [ ] Zoom in/out buttons work
+- [ ] Zoom levels constrained to 50%-300%
+- [ ] Reset button returns to 100%
+- [ ] Current zoom percentage displayed
+- [ ] Keyboard shortcuts work (Cmd/Ctrl + +/-, 0)
+- [ ] PDF re-renders at new scale
+- [ ] Unit tests pass
+- [ ] No performance issues at high zoom levels
+
+---
+
+### PR-009: PDF Page Thumbnails
+**Complexity:** Medium (6 hours)
+**Dependencies:** PR-006, PR-007
+**Can Parallelize:** No
+
+**Description:**
+Add a sidebar showing thumbnail previews of all pages for quick navigation and overview of document structure.
+
+**Files to Create:**
+- `src/renderer/components/PDFViewer/ThumbnailSidebar.tsx`
+  ```typescript
+  interface Props {
+    pdf: PDFDocumentProxy;
+    currentPage: number;
+    onPageSelect: (page: number) => void;
+  }
+  ```
+- `src/renderer/components/PDFViewer/__tests__/ThumbnailSidebar.test.tsx`
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/index.tsx` - Add toggle button and sidebar
+- `src/renderer/components/PDFViewer/PDFCanvas.tsx` - Adjust width when sidebar visible
+
+**Features:**
+- Render all pages as thumbnails at 25% scale
+- Highlight current page thumbnail
+- Click thumbnail to jump to that page
+- Toggle button to show/hide sidebar
+- Lazy render thumbnails (only visible ones)
+- Scrollable thumbnail list
+
+**Key Implementation Details:**
+```typescript
+// Render thumbnails at low scale for performance
+const THUMBNAIL_SCALE = 0.25;
+
+// Only render visible thumbnails (virtual scrolling)
+const visibleThumbnails = useMemo(() => {
+  const start = Math.max(0, scrollTop / thumbnailHeight - 2);
+  const end = Math.min(numPages, start + visibleCount + 4);
+  return Array.from({ length: end - start }, (_, i) => start + i + 1);
+}, [scrollTop, numPages]);
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# Thumbnail sidebar tests pass
+
+npm run dev
+# Thumbnails render for all pages
+# Clicking thumbnail navigates to page
+# Toggle button shows/hides sidebar
+```
+
+**Acceptance Criteria:**
+- [ ] All pages rendered as thumbnails
+- [ ] Thumbnails render at 25% scale
+- [ ] Current page highlighted
+- [ ] Click thumbnail navigates to page
+- [ ] Toggle button works
+- [ ] Performance acceptable for large PDFs (100+ pages)
+- [ ] Lazy rendering implemented
+- [ ] Unit tests pass
+
+---
+
+### PR-010: Text Selection in PDF Viewer
+**Complexity:** Medium (6 hours)
+**Dependencies:** PR-006
+**Can Parallelize:** Yes (parallel with PR-007, PR-008, PR-009)
+
+**Description:**
+Enable native text selection and copying from PDFs using PDF.js text layer overlay.
+
+**Files to Create:**
+- `src/renderer/components/PDFViewer/TextLayer.tsx`
+  ```typescript
+  interface Props {
+    page: PDFPageProxy;
+    scale: number;
+    viewport: PageViewport;
+  }
+  ```
+- `src/renderer/components/PDFViewer/__tests__/TextLayer.test.tsx`
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/PDFCanvas.tsx` - Overlay TextLayer on canvas
+
+**Key Implementation Details:**
+```typescript
+// Use PDF.js text content API
+const textContent = await page.getTextContent();
+
+// Render text layer with proper positioning
+pdfjsLib.renderTextLayer({
+  textContentSource: textContent,
+  container: textLayerDiv,
+  viewport: viewport,
+  textDivs: [],
+});
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# Text layer tests pass
+
+npm run dev
+# Can select text in PDF
+# Cmd/Ctrl+C copies selected text
+# Text selection works at different zoom levels
+```
+
+**Acceptance Criteria:**
+- [ ] Text layer overlays canvas correctly
+- [ ] Text is selectable with mouse
+- [ ] Selected text can be copied (Cmd/Ctrl+C)
+- [ ] Text layer follows zoom changes
+- [ ] Text layer positioned correctly at all scales
+- [ ] No visual artifacts (transparent background)
+- [ ] Unit tests pass
+
+---
+
+### PR-011: PDF Search Functionality
+**Complexity:** Medium (8 hours)
+**Dependencies:** PR-006, PR-010
+**Can Parallelize:** No (needs text layer)
+
+**Description:**
+Add search bar to find text across all pages of PDF, with navigation between results.
+
+**Files to Create:**
+- `src/renderer/components/PDFViewer/SearchBar.tsx`
+  ```typescript
+  interface Props {
+    pdf: PDFDocumentProxy;
+    onResultSelect: (pageNumber: number, resultIndex: number) => void;
+  }
+
+  interface SearchResult {
+    pageNumber: number;
+    text: string;
+    context: string; // Surrounding text
+  }
+  ```
+- `src/renderer/components/PDFViewer/__tests__/SearchBar.test.tsx`
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/index.tsx` - Add search bar with toggle
+
+**Features:**
+- Search input with Enter to search
+- Search across all pages (extract text content)
+- Display results with page numbers and context
+- Navigate between results (prev/next arrows)
+- Highlight current result
+- Show "X results found" count
+- Keyboard shortcuts (Enter, Escape to clear)
+- Case-insensitive search
+
+**Key Implementation Details:**
+```typescript
+async function searchPDF(query: string): Promise<SearchResult[]> {
+  const results: SearchResult[] = [];
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items.map(item => item.str).join(' ');
+
+    const regex = new RegExp(query, 'gi');
+    const matches = [...pageText.matchAll(regex)];
+
+    matches.forEach(match => {
+      results.push({
+        pageNumber: i,
+        text: match[0],
+        context: pageText.substring(match.index - 50, match.index + 50),
+      });
+    });
+  }
+
+  return results;
+}
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# Search bar tests pass
+
+npm run dev
+# Can search for text in PDF
+# Results show with page numbers
+# Navigate between results works
+# Clicking result jumps to page
+```
+
+**Acceptance Criteria:**
+- [ ] Search input works
+- [ ] Searches across all pages
+- [ ] Results show page numbers and context
+- [ ] Navigate prev/next between results
+- [ ] Click result jumps to page
+- [ ] Shows result count
+- [ ] Keyboard shortcuts work (Enter, Escape)
+- [ ] Case-insensitive search
+- [ ] Unit tests pass
+- [ ] Performance acceptable for large PDFs
+
+---
+
+### PR-012: Drag and Drop PDF Import
+**Complexity:** Small (4 hours)
+**Dependencies:** PR-006
+**Can Parallelize:** Yes (parallel with other Phase 3 PRs)
+
+**Description:**
+Allow users to drag and drop PDF files into the file explorer to import them into the workspace.
+
+**Files to Create:**
+- None (modifies existing component)
+
+**Files to Modify:**
+- `src/renderer/components/FileExplorer/index.tsx` - Add drag/drop handlers
+  ```typescript
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    const pdfFiles = files.filter(f => f.name.endsWith('.pdf'));
+
+    for (const file of pdfFiles) {
+      const arrayBuffer = await file.arrayBuffer();
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      await window.api['file:import-pdf'](file.name, base64);
+    }
+
+    // Refresh file list
+    loadFiles();
+  };
+  ```
+- `src/shared/types.ts` - Add IPC handler type
+  ```typescript
+  export interface IpcHandlers {
+    'file:import-pdf': (filename: string, content: string) => Promise<void>;
+    // ... existing handlers
+  }
+  ```
+- `src/main/ipc/file-handlers.ts` - Implement import handler
+- `src/renderer/components/FileExplorer/__tests__/FileExplorer.test.tsx` - Add drag/drop tests
+
+**Features:**
+- Drag and drop zone in file explorer
+- Visual feedback when dragging over (border highlight)
+- Accept only PDF files (filter)
+- Multiple file import support
+- Auto-refresh file list after import
+- Error handling for invalid files
+
+**Testing Requirements:**
+```bash
+npm run test
+# File explorer tests pass (with drag/drop simulation)
+
+npm run dev
+# Can drag PDF from desktop into file explorer
+# Visual feedback when dragging over
+# PDF appears in file list after drop
+```
+
+**Acceptance Criteria:**
+- [ ] Drag and drop zone works
+- [ ] Visual feedback when dragging
+- [ ] Accepts only PDF files
+- [ ] Multiple files can be dropped at once
+- [ ] Files saved to workspace directory
+- [ ] File list refreshes after import
+- [ ] Error handling for non-PDF files
+- [ ] Unit tests pass
+- [ ] Works on all platforms (Windows, macOS, Linux)
+
+---
+
+## Phase 4: PDF Annotations (Week 5-6)
+
+**Goal:** Full annotation system with highlights, notes, and areas.
+
+**Dependencies:** Phase 3 complete
+
+### PR-013: Annotation Storage Service
+**Complexity:** Medium (6 hours)
+**Dependencies:** PR-012
+**Can Parallelize:** No (foundation for all annotation work)
+
+**Description:**
+Create a service to manage annotation CRUD operations, storing annotations as JSON files alongside PDFs. This is the foundation for all annotation features.
+
+**Files to Create:**
+- `src/renderer/services/AnnotationService.ts`
+  ```typescript
+  export interface Annotation {
+    id: string;                    // UUID v4
+    type: 'highlight' | 'note' | 'area';
+    pageNumber: number;            // 1-indexed
+    bounds: Rectangle;             // % coordinates (scale-independent)
+    color?: string;                // Hex color
+    text?: string;                 // Extracted text (highlights)
+    note?: string;                 // User comment
+    createdAt: string;             // ISO 8601
+    modifiedAt: string;
+    citedIn?: string[];            // Markdown files citing this annotation
+  }
+
+  export interface Rectangle {
+    x: number;      // % from left (0-100)
+    y: number;      // % from top (0-100)
+    width: number;  // % of page width
+    height: number; // % of page height
+  }
+
+  export interface AnnotationFile {
+    version: number;               // Schema version for migrations
+    pdfPath: string;
+    annotations: Annotation[];
+  }
+
+  export class AnnotationService {
+    async loadAnnotations(pdfPath: string): Promise<Annotation[]>;
+    async saveAnnotation(pdfPath: string, annotation: Annotation): Promise<void>;
+    async updateAnnotation(pdfPath: string, annotation: Annotation): Promise<void>;
+    async deleteAnnotation(pdfPath: string, annotationId: string): Promise<void>;
+    getAnnotationsForPage(annotations: Annotation[], pageNumber: number): Annotation[];
+  }
+  ```
+- `src/renderer/services/__tests__/AnnotationService.test.ts`
+- `src/shared/types.ts` - Add annotation-related IPC handlers
+  ```typescript
+  export interface IpcHandlers {
+    'annotations:read': (pdfPath: string) => Promise<string | null>;
+    'annotations:write': (pdfPath: string, content: string) => Promise<void>;
+    // ... existing handlers
+  }
+  ```
+
+**Files to Modify:**
+- `src/main/ipc/file-handlers.ts` - Implement annotation file IPC handlers
+- `src/preload/index.ts` - Expose annotation IPC handlers
+
+**Storage Format:**
+```
+MyResearch/
+├── paper.pdf
+└── .paper.pdf.annotations.json
+```
+
+**Key Implementation Details:**
+```typescript
+export class AnnotationService {
+  private cache = new Map<string, AnnotationFile>();
+
+  async loadAnnotations(pdfPath: string): Promise<Annotation[]> {
+    // Check cache first
+    if (this.cache.has(pdfPath)) {
+      return this.cache.get(pdfPath)!.annotations;
+    }
+
+    // Load from file
+    const annotationPath = this.getAnnotationPath(pdfPath);
+    const content = await window.api['annotations:read'](annotationPath);
+
+    if (!content) {
+      return [];
+    }
+
+    const file: AnnotationFile = JSON.parse(content);
+    this.cache.set(pdfPath, file);
+    return file.annotations;
+  }
+
+  async saveAnnotation(pdfPath: string, annotation: Annotation): Promise<void> {
+    const annotations = await this.loadAnnotations(pdfPath);
+    annotations.push(annotation);
+    await this.writeAnnotations(pdfPath, annotations);
+  }
+
+  getAnnotationsForPage(annotations: Annotation[], pageNumber: number): Annotation[] {
+    return annotations.filter(a => a.pageNumber === pageNumber);
+  }
+
+  private getAnnotationPath(pdfPath: string): string {
+    return `.${pdfPath}.annotations.json`;
+  }
+
+  private async writeAnnotations(pdfPath: string, annotations: Annotation[]): Promise<void> {
+    const file: AnnotationFile = {
+      version: 1,
+      pdfPath,
+      annotations,
+    };
+
+    const annotationPath = this.getAnnotationPath(pdfPath);
+    await window.api['annotations:write'](annotationPath, JSON.stringify(file, null, 2));
+    this.cache.set(pdfPath, file);
+  }
+}
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# AnnotationService tests pass
+# Test CRUD operations
+# Test cache invalidation
+# Test page filtering
+```
+
+**Acceptance Criteria:**
+- [ ] Can create annotations (save to JSON)
+- [ ] Can read annotations (load from JSON)
+- [ ] Can update existing annotations
+- [ ] Can delete annotations
+- [ ] Annotations cached in memory
+- [ ] Annotations grouped by page number
+- [ ] JSON schema version included
+- [ ] Percentage-based bounds (scale-independent)
+- [ ] Unit tests pass (90%+ coverage)
+- [ ] IPC handlers implemented
+
+---
+
+### PR-014: SVG Overlay Layer
+**Complexity:** Medium (8 hours)
+**Dependencies:** PR-013
+**Can Parallelize:** No
+
+**Description:**
+Create an SVG layer that overlays the PDF canvas to render annotations (highlights, notes, areas). Converts percentage-based bounds to pixel coordinates.
+
+**Files to Create:**
+- `src/renderer/components/PDFViewer/AnnotationLayer.tsx`
+  ```typescript
+  interface Props {
+    annotations: Annotation[];
+    pageNumber: number;
+    viewport: PageViewport;
+    scale: number;
+    onAnnotationClick: (annotation: Annotation) => void;
+    onAnnotationContextMenu: (annotation: Annotation, e: React.MouseEvent) => void;
+  }
+  ```
+- `src/renderer/components/PDFViewer/__tests__/AnnotationLayer.test.tsx`
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/PDFCanvas.tsx` - Overlay AnnotationLayer on canvas
+- `src/renderer/components/PDFViewer/index.tsx` - Load annotations for current PDF
+
+**Key Implementation Details:**
+```typescript
+// Convert percentage bounds to pixel coordinates
+function boundsToPixels(bounds: Rectangle, viewport: PageViewport): DOMRect {
+  return {
+    x: (bounds.x / 100) * viewport.width,
+    y: (bounds.y / 100) * viewport.height,
+    width: (bounds.width / 100) * viewport.width,
+    height: (bounds.height / 100) * viewport.height,
+  };
+}
+
+// Render different annotation types
+function renderAnnotation(annotation: Annotation) {
+  const pixels = boundsToPixels(annotation.bounds, viewport);
+
+  switch (annotation.type) {
+    case 'highlight':
+      return (
+        <rect
+          x={pixels.x}
+          y={pixels.y}
+          width={pixels.width}
+          height={pixels.height}
+          fill={annotation.color}
+          opacity={0.3}
+          onClick={() => onAnnotationClick(annotation)}
+          onContextMenu={(e) => onAnnotationContextMenu(annotation, e)}
+        />
+      );
+    case 'note':
+      return (
+        <g onClick={() => onAnnotationClick(annotation)}>
+          {/* Sticky note icon */}
+        </g>
+      );
+    case 'area':
+      return (
+        <rect
+          x={pixels.x}
+          y={pixels.y}
+          width={pixels.width}
+          height={pixels.height}
+          fill={annotation.color}
+          stroke={annotation.color}
+          strokeWidth={2}
+          fillOpacity={0.1}
+          onClick={() => onAnnotationClick(annotation)}
+        />
+      );
+  }
+}
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# AnnotationLayer tests pass
+# Test coordinate conversion
+# Test click handlers
+
+npm run dev
+# Annotations render on PDF
+# Annotations follow zoom changes
+# Click annotation triggers handler
+```
+
+**Acceptance Criteria:**
+- [ ] SVG layer overlays canvas correctly
+- [ ] Annotations render at correct positions
+- [ ] Percentage bounds converted to pixels
+- [ ] Annotations scale with zoom level
+- [ ] Click handlers work
+- [ ] Context menu handlers work
+- [ ] Different annotation types render correctly (highlight, note, area)
+- [ ] Opacity correct (highlights 30%, areas 10%)
+- [ ] Unit tests pass
+- [ ] No performance issues with 100+ annotations
+
+---
+
+### PR-015: Highlight Tool
+**Complexity:** Medium (8 hours)
+**Dependencies:** PR-013, PR-014
+**Can Parallelize:** No
+
+**Description:**
+Implement click-and-drag highlighting tool that extracts text from PDF.js and creates highlight annotations.
+
+**Files to Create:**
+- `src/renderer/components/PDFViewer/AnnotationTools.tsx`
+  ```typescript
+  export class HighlightTool {
+    constructor(
+      private page: PDFPageProxy,
+      private viewport: PageViewport,
+      private onComplete: (annotation: Annotation) => void
+    ) {}
+
+    onMouseDown(e: React.MouseEvent): void;
+    onMouseMove(e: React.MouseEvent): void;
+    onMouseUp(e: React.MouseEvent): void;
+
+    private async extractText(bounds: Rectangle): Promise<string>;
+  }
+  ```
+- `src/renderer/components/PDFViewer/__tests__/AnnotationTools.test.tsx`
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/index.tsx` - Add tool selection state
+- `src/renderer/components/PDFViewer/PDFCanvas.tsx` - Add mouse event handlers
+- `package.json` - Add uuid dependency
+  ```bash
+  npm install uuid @types/uuid
+  ```
+
+**Features:**
+- Click and drag to select text region
+- Visual feedback during selection (dashed box)
+- Extract text from PDF.js text content
+- 5 color options (yellow, green, blue, pink, orange)
+- Generate UUID for annotation ID
+- Save to AnnotationService
+
+**Key Implementation Details:**
+```typescript
+export class HighlightTool {
+  private startPoint: Point | null = null;
+  private currentBounds: Rectangle | null = null;
+
+  async onMouseUp(e: React.MouseEvent) {
+    if (!this.currentBounds) return;
+
+    // Extract text from PDF.js
+    const textContent = await this.page.getTextContent();
+    const text = this.extractTextInBounds(textContent, this.currentBounds);
+
+    const annotation: Annotation = {
+      id: uuidv4(),
+      type: 'highlight',
+      pageNumber: this.page.pageNumber,
+      bounds: this.currentBounds,
+      color: this.selectedColor,
+      text,
+      createdAt: new Date().toISOString(),
+      modifiedAt: new Date().toISOString(),
+    };
+
+    this.onComplete(annotation);
+  }
+
+  private extractTextInBounds(textContent: TextContent, bounds: Rectangle): string {
+    const items = textContent.items.filter(item => {
+      const itemBounds = this.getItemBounds(item);
+      return this.intersects(itemBounds, bounds);
+    });
+
+    return items.map(item => item.str).join(' ');
+  }
+}
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# HighlightTool tests pass
+
+npm run dev
+# Can activate highlight tool
+# Click and drag selects region
+# Text extracted correctly
+# Annotation saved and rendered
+```
+
+**Acceptance Criteria:**
+- [ ] Highlight tool activates/deactivates
+- [ ] Click and drag creates selection box
+- [ ] Visual feedback during selection
+- [ ] Text extracted from selected region
+- [ ] Annotation created with UUID
+- [ ] 5 color options available
+- [ ] Annotation saved via AnnotationService
+- [ ] Annotation renders immediately after creation
+- [ ] Unit tests pass
+
+---
+
+### PR-016: Note Tool
+**Complexity:** Small (4 hours)
+**Dependencies:** PR-013, PR-014
+**Can Parallelize:** Yes (parallel with PR-015)
+
+**Description:**
+Implement note tool that allows users to click anywhere on a PDF to place sticky note annotations with text.
+
+**Files to Create:**
+- None (extends AnnotationTools.tsx from PR-015)
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/AnnotationTools.tsx` - Add NoteTool class
+  ```typescript
+  export class NoteTool {
+    constructor(
+      private pageNumber: number,
+      private viewport: PageViewport,
+      private onComplete: (annotation: Annotation) => void
+    ) {}
+
+    onClick(e: React.MouseEvent): void {
+      const bounds = this.createNoteBounds(e.clientX, e.clientY);
+      const note = prompt('Enter note text:');
+
+      if (!note) return;
+
+      const annotation: Annotation = {
+        id: uuidv4(),
+        type: 'note',
+        pageNumber: this.pageNumber,
+        bounds,
+        note,
+        color: '#FFD700', // Gold color for note icon
+        createdAt: new Date().toISOString(),
+        modifiedAt: new Date().toISOString(),
+      };
+
+      this.onComplete(annotation);
+    }
+
+    private createNoteBounds(x: number, y: number): Rectangle {
+      // Create 5% x 5% bounds for sticky note icon
+      return {
+        x: (x / this.viewport.width) * 100,
+        y: (y / this.viewport.height) * 100,
+        width: 5,
+        height: 5,
+      };
+    }
+  }
+  ```
+- `src/renderer/components/PDFViewer/AnnotationLayer.tsx` - Add sticky note icon rendering
+  ```typescript
+  case 'note':
+    return (
+      <g transform={`translate(${pixels.x}, ${pixels.y})`}>
+        <rect width={pixels.width} height={pixels.height} fill="#FFD700" rx={2} />
+        <text x={pixels.width/2} y={pixels.height/2} textAnchor="middle" dy=".3em">📝</text>
+      </g>
+    );
+  ```
+
+**Features:**
+- Click to place note
+- Note input dialog (prompt or custom modal)
+- Sticky note icon (5% of page width/height)
+- Gold color (#FFD700)
+- Tooltip showing note text on hover
+
+**Testing Requirements:**
+```bash
+npm run test
+# NoteTool tests pass
+
+npm run dev
+# Can activate note tool
+# Click places sticky note
+# Input dialog appears
+# Note text saved
+# Icon renders on PDF
+```
+
+**Acceptance Criteria:**
+- [ ] Note tool activates/deactivates
+- [ ] Click places note icon
+- [ ] Input dialog appears for note text
+- [ ] Note saved with text
+- [ ] Icon renders at 5% x 5% size
+- [ ] Hover shows note text (tooltip)
+- [ ] Icon color is gold (#FFD700)
+- [ ] Unit tests pass
+
+---
+
+### PR-017: Area Selection Tool
+**Complexity:** Medium (6 hours)
+**Dependencies:** PR-013, PR-014
+**Can Parallelize:** Yes (parallel with PR-015, PR-016)
+
+**Description:**
+Implement area selection tool for selecting rectangular regions (for figures, tables, diagrams). Similar to highlight but without text extraction.
+
+**Files to Create:**
+- None (extends AnnotationTools.tsx)
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/AnnotationTools.tsx` - Add AreaTool class
+  ```typescript
+  export class AreaTool {
+    constructor(
+      private pageNumber: number,
+      private viewport: PageViewport,
+      private onComplete: (annotation: Annotation) => void
+    ) {}
+
+    onMouseDown(e: React.MouseEvent): void;
+    onMouseMove(e: React.MouseEvent): void;
+    onMouseUp(e: React.MouseEvent): void;
+  }
+  ```
+
+**Features:**
+- Click and drag to select rectangular area
+- Visual feedback (dashed border during selection)
+- Optional note attachment
+- 5 color options
+- Use case: Highlight figures, tables, diagrams
+
+**Key Implementation Details:**
+```typescript
+export class AreaTool {
+  private startPoint: Point | null = null;
+  private currentBounds: Rectangle | null = null;
+
+  onMouseUp(e: React.MouseEvent) {
+    if (!this.currentBounds) return;
+
+    const note = prompt('Add a note for this area (optional):');
+
+    const annotation: Annotation = {
+      id: uuidv4(),
+      type: 'area',
+      pageNumber: this.pageNumber,
+      bounds: this.currentBounds,
+      color: this.selectedColor,
+      note: note || undefined,
+      createdAt: new Date().toISOString(),
+      modifiedAt: new Date().toISOString(),
+    };
+
+    this.onComplete(annotation);
+  }
+}
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# AreaTool tests pass
+
+npm run dev
+# Can activate area tool
+# Click and drag selects area
+# Optional note works
+# Area renders with border
+```
+
+**Acceptance Criteria:**
+- [ ] Area tool activates/deactivates
+- [ ] Click and drag creates rectangular selection
+- [ ] Visual feedback during selection (dashed border)
+- [ ] Optional note can be added
+- [ ] 5 color options available
+- [ ] Area renders with border (2px) and 10% fill opacity
+- [ ] Annotation saved via AnnotationService
+- [ ] Unit tests pass
+
+---
+
+### PR-018: Annotation Toolbar
+**Complexity:** Small (4 hours)
+**Dependencies:** PR-015, PR-016, PR-017
+**Can Parallelize:** No (needs all tools)
+
+**Description:**
+Create toolbar for selecting annotation tools and colors. Provides UI for switching between select, highlight, note, and area tools.
+
+**Files to Create:**
+- `src/renderer/components/PDFViewer/AnnotationToolbar.tsx`
+  ```typescript
+  interface Props {
+    selectedTool: 'select' | 'highlight' | 'note' | 'area';
+    selectedColor: string;
+    onToolChange: (tool: string) => void;
+    onColorChange: (color: string) => void;
+  }
+  ```
+- `src/renderer/components/PDFViewer/__tests__/AnnotationToolbar.test.tsx`
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/index.tsx` - Add toolbar above PDF viewer
+
+**Features:**
+- Tool selection buttons (select, highlight, note, area)
+- Color picker (5 colors: yellow, green, blue, pink, orange)
+- Active tool indication (highlighted button)
+- Keyboard shortcuts (Esc = select, H = highlight, N = note, A = area)
+- Tooltips with keyboard shortcut hints
+
+**UI Design:**
+```
+┌──────────────────────────────────────────────┐
+│ [Select] [Highlight] [Note] [Area]  [🎨 Colors] │
+└──────────────────────────────────────────────┘
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# AnnotationToolbar tests pass
+
+npm run dev
+# Toolbar renders above PDF
+# Tool selection works
+# Color picker works
+# Keyboard shortcuts work
+```
+
+**Acceptance Criteria:**
+- [ ] Toolbar renders correctly
+- [ ] Tool buttons toggle correctly
+- [ ] Active tool highlighted
+- [ ] Color picker shows 5 colors
+- [ ] Selected color highlighted
+- [ ] Keyboard shortcuts work (Esc, H, N, A)
+- [ ] Tooltips show shortcuts
+- [ ] Unit tests pass
+
+---
+
+### PR-019: Annotations Sidebar
+**Complexity:** Medium (6 hours)
+**Dependencies:** PR-013, PR-014
+**Can Parallelize:** Yes (parallel with PR-015-017)
+
+**Description:**
+Create sidebar panel listing all annotations for the current PDF, grouped by page, with options to jump to annotations, edit, and delete.
+
+**Files to Create:**
+- `src/renderer/components/PDFViewer/AnnotationsSidebar.tsx`
+  ```typescript
+  interface Props {
+    annotations: Annotation[];
+    currentPage: number;
+    onAnnotationSelect: (annotation: Annotation) => void;
+    onAnnotationEdit: (annotation: Annotation) => void;
+    onAnnotationDelete: (annotationId: string) => void;
+  }
+  ```
+- `src/renderer/components/PDFViewer/__tests__/AnnotationsSidebar.test.tsx`
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/index.tsx` - Add sidebar toggle and panel
+
+**Features:**
+- List annotations grouped by page number
+- Show annotation type icon (highlight, note, area)
+- Show preview text (first 50 chars)
+- Show note text if present
+- Show citation count (citedIn length)
+- Click to jump to annotation's page
+- Edit button (pencil icon)
+- Delete button (trash icon)
+- Toggle button to show/hide sidebar
+
+**UI Design:**
+```
+┌─────────────────────┐
+│ 📌 Annotations (12) │
+├─────────────────────┤
+│ Page 1 (3)          │
+│  🟡 "This is..."   │
+│     📝 My note     │
+│     ✏️ 🗑️          │
+│  🟢 "Another..."   │
+│     ✏️ 🗑️          │
+│ Page 2 (1)          │
+│  📦 Figure 1       │
+│     📝 Important   │
+│     🔗 Cited in 2  │
+│     ✏️ 🗑️          │
+└─────────────────────┘
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# AnnotationsSidebar tests pass
+
+npm run dev
+# Sidebar lists all annotations
+# Grouped by page
+# Click jumps to page
+# Edit/delete buttons work
+```
+
+**Acceptance Criteria:**
+- [ ] Sidebar lists all annotations
+- [ ] Annotations grouped by page number
+- [ ] Shows type icon (color dot for highlights/areas, sticky note for notes)
+- [ ] Shows preview text (first 50 chars for highlights)
+- [ ] Shows note text if present
+- [ ] Shows citation count if citedIn > 0
+- [ ] Click annotation jumps to page
+- [ ] Edit button triggers edit handler
+- [ ] Delete button triggers delete handler
+- [ ] Toggle button shows/hides sidebar
+- [ ] Unit tests pass
+
+---
+
+### PR-020: Edit/Delete Annotations
+**Complexity:** Medium (6 hours)
+**Dependencies:** PR-013, PR-019
+**Can Parallelize:** No (needs sidebar)
+
+**Description:**
+Implement UI and handlers for editing and deleting annotations. Includes context menu for right-click and edit dialogs.
+
+**Files to Create:**
+- `src/renderer/components/PDFViewer/AnnotationContextMenu.tsx`
+  ```typescript
+  interface Props {
+    annotation: Annotation;
+    position: { x: number; y: number };
+    onEdit: () => void;
+    onChangeColor: (color: string) => void;
+    onDelete: () => void;
+    onQuote: () => void; // Quote in markdown note
+    onClose: () => void;
+  }
+  ```
+- `src/renderer/components/PDFViewer/NoteEditDialog.tsx`
+  ```typescript
+  interface Props {
+    annotation: Annotation;
+    onSave: (note: string) => void;
+    onCancel: () => void;
+  }
+  ```
+- `src/renderer/components/PDFViewer/__tests__/AnnotationContextMenu.test.tsx`
+
+**Files to Modify:**
+- `src/renderer/components/PDFViewer/AnnotationLayer.tsx` - Add right-click handler
+- `src/renderer/components/PDFViewer/index.tsx` - Wire up edit/delete handlers
+- `src/renderer/services/AnnotationService.ts` - Already has update/delete methods
+
+**Features:**
+- Right-click annotation shows context menu
+- Context menu options:
+  - Edit note
+  - Change color (submenu with 5 colors)
+  - Delete
+  - Quote in note (creates markdown citation)
+- Edit dialog for changing note text
+- Delete confirmation dialog
+- Update AnnotationService on changes
+
+**Key Implementation Details:**
+```typescript
+async function handleEditNote(annotation: Annotation, newNote: string) {
+  const updated = {
+    ...annotation,
+    note: newNote,
+    modifiedAt: new Date().toISOString(),
+  };
+
+  await annotationService.updateAnnotation(pdfPath, updated);
+
+  // Refresh annotations
+  const annotations = await annotationService.loadAnnotations(pdfPath);
+  setAnnotations(annotations);
+}
+
+async function handleDelete(annotationId: string) {
+  if (!confirm('Delete this annotation?')) return;
+
+  await annotationService.deleteAnnotation(pdfPath, annotationId);
+
+  // Refresh annotations
+  const annotations = await annotationService.loadAnnotations(pdfPath);
+  setAnnotations(annotations);
+}
+
+async function handleChangeColor(annotation: Annotation, newColor: string) {
+  const updated = {
+    ...annotation,
+    color: newColor,
+    modifiedAt: new Date().toISOString(),
+  };
+
+  await annotationService.updateAnnotation(pdfPath, updated);
+
+  // Refresh annotations
+  const annotations = await annotationService.loadAnnotations(pdfPath);
+  setAnnotations(annotations);
+}
+```
+
+**Testing Requirements:**
+```bash
+npm run test
+# Context menu tests pass
+# Edit dialog tests pass
+
+npm run dev
+# Right-click annotation shows menu
+# Edit note works
+# Change color works
+# Delete works (with confirmation)
+```
+
+**Acceptance Criteria:**
+- [ ] Right-click shows context menu
+- [ ] Context menu positioned correctly
+- [ ] Edit note opens dialog
+- [ ] Note dialog saves changes
+- [ ] Change color submenu works
+- [ ] Color change updates annotation
+- [ ] Delete shows confirmation
+- [ ] Delete removes annotation
+- [ ] Quote in note creates markdown citation (Phase 5 feature, placeholder for now)
+- [ ] Annotations refresh after changes
+- [ ] Unit tests pass
 
 ---
 
