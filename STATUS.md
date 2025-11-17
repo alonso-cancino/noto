@@ -1,8 +1,8 @@
 # Noto Implementation Status
 
 **Last Updated:** 2025-11-17
-**Version:** 0.5.0-alpha
-**Completion:** 5/8 Phases (62.5%)
+**Version:** 0.9.0-alpha
+**Completion:** 6/8 Phases (75%)
 
 This document provides an accurate assessment of what's currently implemented vs. what's planned.
 
@@ -21,13 +21,20 @@ This document provides an accurate assessment of what's currently implemented vs
 - ✅ PDF annotations (highlights, notes, areas)
 - ✅ Annotation editing and management
 - ✅ CI/CD pipeline with Jest and Playwright
+- ✅ Citation system with noto:// protocol
+- ✅ Quote PDFs in markdown notes
+- ✅ Bidirectional links and backlinks
+- ✅ Google Drive OAuth authentication
+- ✅ Google Drive sync (upload/download)
+- ✅ IndexedDB cache for offline support
+- ✅ Conflict resolution
+- ✅ Sync status indicators
 
 **What Doesn't Work Yet:**
-- ❌ Citation system (noto:// protocol, quote in notes)
-- ❌ Google Drive sync
 - ❌ Full-text search across all files
 - ❌ Command palette
 - ❌ Settings UI
+- ❌ Dark/light theme toggle
 - ❌ Installers and auto-updates
 
 **Development Ready:**
@@ -249,66 +256,86 @@ This document provides an accurate assessment of what's currently implemented vs
 
 ---
 
-### 🚧 Phase 5: Citation System (NOT STARTED)
+### ✅ Phase 5: Citation System (COMPLETE)
 
-**Status:** 0% Complete
-**Dependencies:** Phase 4 must complete
+**Status:** 100% Complete
+**Completed:** November 2025
 
-**What Needs to Be Built:**
-- Custom `noto://` protocol handler
-- Citation formatting service
-- "Quote in Note" context menu
-- Citation link rendering in preview
-- Backlinks panel
+**Implemented:**
+- [x] Custom `noto://` protocol handler
+- [x] Citation formatting service
+- [x] "Quote in Note" context menu
+- [x] Citation link rendering in preview
+- [x] Backlinks panel
+- [x] Bidirectional linking between PDFs and notes
 
-**Files That Don't Exist:**
-- `src/main/protocol/noto-protocol.ts`
-- `src/main/services/CitationService.ts`
-- Citation-related components
+**Files Created:**
+- `src/main/protocol/noto-protocol.ts` - Protocol handler
+- `src/main/services/CitationService.ts` - Citation formatting
+- `src/renderer/components/PDFViewer/QuoteButton.tsx` - Quote UI
+- `src/renderer/components/Editor/CitationLink.tsx` - Link rendering
+- `src/renderer/components/PDFViewer/BacklinksPanel.tsx` - Backlinks view
+- Tests in `__tests__/` directories
 
-**PRs Required:**
-- PR-021 through PR-025 (5 PRs)
-
-**Estimated Time:** 2 weeks
+**What Works:**
+- Click "Quote in Note" on annotations to insert citations
+- Citations link back to PDF at specific page and annotation
+- Click citation to open PDF at exact location
+- View all notes that cite a PDF in backlinks panel
+- Bidirectional navigation between notes and PDFs
 
 ---
 
-### 🚧 Phase 6: Google Drive Sync (NOT STARTED)
+### ✅ Phase 6: Google Drive Sync (COMPLETE)
 
-**Status:** 0% Complete
-**Dependencies:** Phase 5 must complete
+**Status:** 100% Complete
+**Completed:** November 2025
 
-**⚠️ Warning:** This is the most complex phase.
+**Implemented:**
+- [x] OAuth 2.0 authentication flow with Google
+- [x] Secure token storage using Electron safeStorage
+- [x] Google Drive API integration (list, upload, download, changes)
+- [x] IndexedDB cache layer for offline support
+- [x] Sync engine with upload/download orchestration
+- [x] Sync queue with exponential backoff retry logic
+- [x] Conflict resolution (last-write-wins, merge, manual)
+- [x] Background watcher with 30-second polling
+- [x] Sync status indicators in UI
+- [x] Folder selection UI
 
-**What Needs to Be Built:**
-- Google Cloud Console project setup
-- OAuth 2.0 authentication flow
-- Google Drive API integration
-- IndexedDB cache layer
-- Sync engine (upload/download)
-- Sync queue with retry logic
-- Conflict resolution
-- Background watcher
+**Files Created:**
+- `src/main/services/drive/DriveAuthService.ts` - OAuth authentication
+- `src/main/services/drive/DriveService.ts` - Drive API operations
+- `src/main/services/sync/SyncEngine.ts` - Sync orchestration
+- `src/main/services/sync/SyncQueue.ts` - Upload queue with retry
+- `src/main/services/sync/ConflictResolver.ts` - Conflict resolution
+- `src/renderer/services/storage/IndexedDBService.ts` - Local cache
+- `src/renderer/components/SyncStatus/` - Sync status UI
+- `src/renderer/components/DriveSetup/` - Setup wizard
+- Tests in `__tests__/` directories
 
-**Dependencies Missing:**
-- `googleapis` - NOT installed yet
-- `idb` (IndexedDB wrapper) - NOT installed yet
+**Dependencies Installed:**
+- `googleapis` - Google Drive API client
+- `idb` - IndexedDB wrapper
+- `electron-store` - Secure settings storage
 
-**Files That Don't Exist:**
-- `src/main/services/drive/` - entire directory missing
-- `src/main/services/sync/` - entire directory missing
-- `src/main/services/storage/IndexedDB.ts`
+**What Works:**
+- Sign in with Google OAuth flow
+- Select Google Drive folder for workspace
+- Initial sync downloads all files from Drive
+- Background sync every 30 seconds
+- Upload changes to Drive with retry logic
+- Download changes from Drive automatically
+- Offline support (queue uploads when offline)
+- Conflict detection and automatic resolution
+- Annotation merging for conflict-free sync
+- Sync status in status bar (synced, syncing, offline, error)
 
-**PRs Required:**
-- PR-026 through PR-035 (10 PRs)
-
-**Estimated Time:** 3 weeks
-
-**Setup Required:**
-1. Create Google Cloud project
-2. Enable Drive API
-3. Create OAuth credentials
-4. Configure consent screen
+**Architecture:**
+- Three-tier storage: Drive (cloud) → IndexedDB (cache) → Memory (active)
+- Offline-first design for instant access
+- Changes API for efficient sync
+- Exponential backoff for failed uploads
 
 ---
 
