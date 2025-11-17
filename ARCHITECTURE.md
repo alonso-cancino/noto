@@ -802,10 +802,77 @@ autoUpdater.on('update-downloaded', () => {
 
 ## Testing Strategy
 
-### Unit Tests (Jest)
+### Overview
+
+Noto uses a comprehensive testing strategy combining unit tests, integration tests, and end-to-end tests to ensure reliability across all features.
+
+**Testing Tools:**
+- **Jest** - Unit and integration testing for TypeScript/React
+- **React Testing Library** - Component testing with user-centric queries
+- **Playwright** - End-to-end testing of the full Electron application
+
+**Coverage Goals:**
+- **Overall:** 80%+ code coverage
+- **Critical paths:** 90%+ (authentication, file operations, sync, IPC handlers)
+- **New code:** Must maintain or improve overall coverage
+
+For detailed testing guidelines, see [docs/TESTING.md](docs/TESTING.md).
+
+### Unit Tests
+
+Unit tests verify individual functions, services, and components in isolation using Jest and React Testing Library.
+
+**Location:** `__tests__/` directory next to source code
+
+**Examples:**
 
 ```typescript
-// Test pure functions
+// src/renderer/services/__tests__/markdown.test.ts
+import { renderMarkdown, countWords } from '../markdown';
+
+describe('markdown service', () => {
+  describe('renderMarkdown', () => {
+    it('should render markdown to HTML', () => {
+      const result = renderMarkdown('# Hello');
+      expect(result).toContain('<h1>');
+      expect(result).toContain('Hello');
+    });
+
+    it('should render LaTeX math inline', () => {
+      const result = renderMarkdown('$E = mc^2$');
+      expect(result).toContain('katex');
+    });
+  });
+
+  describe('countWords', () => {
+    it('should count words correctly', () => {
+      expect(countWords('Hello world test')).toBe(3);
+    });
+
+    it('should exclude code blocks', () => {
+      const markdown = 'Text\n```\ncode\n```';
+      expect(countWords(markdown)).toBe(1);
+    });
+  });
+});
+
+// src/renderer/components/StatusBar/__tests__/StatusBar.test.tsx
+import { render, screen } from '@testing-library/react';
+import { StatusBar } from '../index';
+
+describe('StatusBar', () => {
+  it('should display word count', () => {
+    render(<StatusBar wordCount={42} />);
+    expect(screen.getByText(/42 words/i)).toBeInTheDocument();
+  });
+
+  it('should show dirty indicator when unsaved', () => {
+    render(<StatusBar isDirty={true} />);
+    expect(screen.getByText(/unsaved/i)).toBeInTheDocument();
+  });
+});
+
+// Testing annotation service
 describe('AnnotationService', () => {
   it('should merge annotations by ID', () => {
     const local = [{ id: '1', text: 'A' }];
@@ -819,31 +886,100 @@ describe('AnnotationService', () => {
 });
 ```
 
-### Integration Tests (Playwright)
+### E2E Tests (Playwright)
+
+End-to-end tests verify complete user workflows in the actual Electron application.
+
+**Location:** `e2e/` directory at project root
+
+**Examples:**
 
 ```typescript
-test('create note and sync', async ({ page }) => {
-  // Launch app
-  await page.goto('app://.');
+// e2e/app.spec.ts
+import { test, expect } from '@playwright/test';
+import { launchApp } from './setup';
 
-  // Create new note
-  await page.click('[data-testid="new-file"]');
-  await page.fill('[data-testid="filename"]', 'test.md');
+test('app launches successfully', async () => {
+  const app = await launchApp();
+  const window = await app.firstWindow();
 
-  // Write content
-  await page.click('[data-testid="editor"]');
-  await page.keyboard.type('# Test Note');
+  expect(await window.title()).toBe('Noto');
+
+  await app.close();
+});
+
+// e2e/markdown-editor.spec.ts
+test('complete markdown editing workflow', async () => {
+  const app = await launchApp();
+  const window = await app.firstWindow();
+
+  // Create new file
+  await window.click('[data-testid="new-file"]');
+  await window.fill('[data-testid="filename-input"]', 'test.md');
+  await window.press('[data-testid="filename-input"]', 'Enter');
+
+  // Type markdown content
+  await window.fill('.monaco-editor textarea', '# Test Note\n\nSome content');
 
   // Wait for auto-save
-  await page.waitForSelector('[data-testid="sync-done"]');
+  await window.waitForSelector('[data-testid="saved-indicator"]');
+
+  // Verify word count
+  const statusBar = await window.textContent('.status-bar');
+  expect(statusBar).toContain('3 words');
+
+  // Verify preview updates
+  const preview = await window.textContent('.markdown-preview');
+  expect(preview).toContain('Test Note');
+
+  await app.close();
+});
+
+// e2e/pdf-viewer.spec.ts (Phase 3+)
+test('create note and sync', async () => {
+  const app = await launchApp();
+  const window = await app.firstWindow();
+
+  // Launch app
+  await window.goto('app://.');
+
+  // Create new note
+  await window.click('[data-testid="new-file"]');
+  await window.fill('[data-testid="filename"]', 'test.md');
+
+  // Write content
+  await window.click('[data-testid="editor"]');
+  await window.keyboard.type('# Test Note');
+
+  // Wait for auto-save
+  await window.waitForSelector('[data-testid="sync-done"]');
 
   // Verify synced to Drive
   const files = await driveService.listFiles();
   expect(files).toContainEqual(
     expect.objectContaining({ name: 'test.md' })
   );
+
+  await app.close();
 });
 ```
+
+### Continuous Integration
+
+All tests run automatically via GitHub Actions on:
+- Every push to `main` branch
+- Every pull request
+
+**CI Workflow:**
+1. Lint code (`npm run lint`)
+2. Run unit tests with coverage (`npm run test:coverage`)
+3. Build application (`npm run build`)
+4. Run E2E tests (`npm run test:e2e`)
+
+**Coverage reporting:**
+- Coverage reports uploaded to Codecov
+- PR comments show coverage diff
+- Build fails if coverage drops below threshold
 
 ## Monitoring & Logging
 

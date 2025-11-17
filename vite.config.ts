@@ -19,4 +19,8 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  optimizeDeps: {
+    exclude: ['pdfjs-dist'],
+  },
+  publicDir: 'public',
 });
