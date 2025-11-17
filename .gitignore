@@ -44,8 +44,3 @@ Thumbs.db
 
 # Local data (for testing)
 userData/
-
-# Package manager
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
