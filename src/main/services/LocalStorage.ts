@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { Dirent } from 'fs';
 import path from 'path';
 import { app } from 'electron';
 import type { FileMetadata, FileType } from '../../shared/types';
@@ -244,7 +245,7 @@ export class LocalStorage {
     }
   }
 
-  private getFileType(entry: fs.Dirent): FileType {
+  private getFileType(entry: Dirent): FileType {
     if (entry.isDirectory()) {
       return 'folder';
     }

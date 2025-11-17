@@ -6,6 +6,8 @@
     "moduleResolution": "node",
     "outDir": "dist/main",
     "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "esModuleInterop": true,
     "lib": ["ES2020"]
   },
   "include": ["src/main/**/*", "src/shared/**/*", "src/preload/**/*"],

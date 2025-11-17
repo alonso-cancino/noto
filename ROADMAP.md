@@ -1,21 +1,21 @@
 # Noto Development Roadmap
 
-**Current Version:** 0.2.0-alpha
+**Current Version:** 0.5.0-alpha
 **Target Version:** 1.0.0
-**Last Updated:** 2025-01-17
+**Last Updated:** 2025-11-17
 
 ---
 
 ## Current Status
 
-**Completion:** 2/8 Phases (25%)
+**Completion:** 5/8 Phases (62.5%)
 
+- ✅ **Phase 0:** CI/CD & Testing (Complete)
 - ✅ **Phase 1:** Foundation & File System (Complete)
 - ✅ **Phase 2:** Markdown Editor (Complete)
-- 🚧 **Phase 0:** CI/CD & Testing (Next - MUST DO FIRST)
-- 🚧 **Phase 3:** PDF Viewer
-- 🚧 **Phase 4:** PDF Annotations
-- 🚧 **Phase 5:** Citation System
+- ✅ **Phase 3:** PDF Viewer (Complete)
+- ✅ **Phase 4:** PDF Annotations (Complete)
+- 🚧 **Phase 5:** Citation System (Next)
 - 🚧 **Phase 6:** Google Drive Sync
 - 🚧 **Phase 7:** Polish & Features
 - 🚧 **Phase 8:** Build & Distribution
@@ -60,64 +60,53 @@ For complete development plans, see:
 - Auto-save (500ms debounce)
 - Word count tracking
 
-### 🚧 Phase 0: CI/CD & Testing (NEXT)
+### ✅ Phase 0: CI/CD & Testing (Complete)
 
-**Status:** Not Started
-**Estimated Time:** 2 weeks
+**Status:** 100% Complete
+**Time Spent:** 1 week
 **PRs:** PR-001 through PR-005
 
-**⚠️ CRITICAL: Must complete before other development**
-
-**Goals:**
-- Jest unit testing framework
-- ESLint + Prettier code quality
+**Delivered:**
+- Jest unit testing framework with React Testing Library
+- ESLint + Prettier code quality tools
 - GitHub Actions CI pipeline
-- Playwright E2E testing
-- Contributing documentation
+- Playwright E2E testing setup
+- CONTRIBUTING.md and testing documentation
+- All tests passing in CI
 
-**Why First:**
-All future PRs require passing tests and CI checks.
+### ✅ Phase 3: PDF Viewer (Complete)
 
-**Next Step:** Start with PR-001 (Jest setup)
-
-### 🚧 Phase 3: PDF Viewer (After Phase 0)
-
-**Status:** Not Started
-**Estimated Time:** 2 weeks
+**Status:** 100% Complete
+**Time Spent:** 2 weeks
 **PRs:** PR-006 through PR-012
 
-**Goals:**
-- PDF.js integration
-- Basic PDF rendering
-- Page navigation (prev/next, jump to page)
-- Zoom controls (fit-width, fit-page, custom)
-- Thumbnail sidebar
-- Text selection
-- In-PDF search
-- Drag-and-drop import
+**Delivered:**
+- PDF.js integration with worker configuration
+- Full PDF rendering with page navigation
+- Zoom controls (50%-300%, keyboard shortcuts)
+- Thumbnail sidebar with lazy rendering
+- Text selection layer for copying text
+- In-PDF search with result navigation
+- Drag-and-drop PDF import
 
-**Dependencies Ready:**
-- ✅ pdfjs-dist installed
-- ✅ Types defined
-- ✅ UI placeholder ready
+### ✅ Phase 4: PDF Annotations (Complete)
 
-### 🚧 Phase 4: PDF Annotations (After Phase 3)
-
-**Status:** Not Started
-**Estimated Time:** 2 weeks
+**Status:** 100% Complete
+**Time Spent:** 2 weeks
 **PRs:** PR-013 through PR-020
 
-**Goals:**
-- Annotation storage service
-- `.pdf.annotations.json` files
-- SVG overlay layer
-- Highlight tool (5 colors)
-- Sticky note tool
-- Area selection tool
-- Annotations sidebar
-- Edit/delete annotations
+**Delivered:**
+- AnnotationService with CRUD operations and caching
+- JSON storage (`.pdf.annotations.json` files)
+- SVG overlay layer for rendering annotations
+- Highlight tool with text extraction (5 colors)
+- Sticky note tool with click-to-place
+- Area selection tool for figures/tables
+- Annotations sidebar grouped by page
+- Context menu for edit/delete/color change
+- NoteEditDialog for editing annotation notes
 
-### 🚧 Phase 5: Citation System (After Phase 4)
+### 🚧 Phase 5: Citation System (NEXT)
 
 **Status:** Not Started
 **Estimated Time:** 2 weeks
@@ -223,22 +212,23 @@ Quote PDF highlights directly into markdown with bidirectional links.
 
 ## Feature Roadmap
 
-### v0.2.0 (Current) ✅
+### v0.2.0 ✅
 - Markdown editor with Monaco
 - LaTeX math rendering
 - Local file storage
 - Auto-save
 
-### v0.3.0 (Phase 3 Complete)
+### v0.3.0 ✅
 - PDF viewing with navigation
 - PDF zoom controls
 - Text selection in PDFs
 - In-PDF search
 
-### v0.5.0 (Phase 4 Complete)
-- PDF annotations (highlights, notes)
-- Annotation management
-- Annotation sidebar
+### v0.5.0 (Current) ✅
+- PDF annotations (highlights, notes, areas)
+- Annotation management with edit/delete
+- Annotations sidebar grouped by page
+- 5 color options for highlights
 
 ### v0.7.0 (Phase 5 Complete)
 - Citation system
