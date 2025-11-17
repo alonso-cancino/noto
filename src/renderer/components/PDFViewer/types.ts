@@ -4,6 +4,7 @@ import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist/types/src/display/api
 
 export interface PDFViewerProps {
   filePath: string;
+  citationTarget?: { page: number; annotationId?: string } | null;
   onError?: (error: Error) => void;
 }
 

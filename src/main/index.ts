@@ -1,7 +1,8 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, protocol } from 'electron';
 import path from 'path';
 import { registerAllHandlers } from './ipc';
 import { localStorage } from './services/LocalStorage';
+import { registerProtocolHandler } from './protocol/notoProtocol';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -43,6 +44,10 @@ app.whenReady().then(async () => {
   await localStorage.initialize();
   console.log('✓ Local storage initialized at:', localStorage.getWorkspacePath());
 
+  // Register custom noto:// protocol
+  registerProtocolHandler();
+  console.log('✓ Custom noto:// protocol registered');
+
   // Register IPC handlers
   registerAllHandlers();
 
@@ -70,3 +75,8 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled rejection:', reason);
 });
+
+// Export mainWindow getter for protocol handler
+export function getMainWindow(): BrowserWindow | null {
+  return mainWindow;
+}

@@ -8,7 +8,11 @@ import { ThumbnailSidebar } from './ThumbnailSidebar';
 import { SearchBar } from './SearchBar';
 import { PDFViewerProps } from './types';
 
-export function PDFViewer({ filePath, onError }: PDFViewerProps): JSX.Element {
+export function PDFViewer({
+  filePath,
+  citationTarget,
+  onError,
+}: PDFViewerProps): JSX.Element {
   const { pdf, loading, error, currentPage, totalPages, getPage } =
     usePDF(filePath);
   const [currentPageProxy, setCurrentPageProxy] = useState<PDFPageProxy | null>(
@@ -17,6 +21,25 @@ export function PDFViewer({ filePath, onError }: PDFViewerProps): JSX.Element {
   const [scale, setScale] = useState<number>(1.0);
   const [showThumbnails, setShowThumbnails] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
+  const [highlightedAnnotation, setHighlightedAnnotation] = useState<
+    string | null
+  >(null);
+
+  // Handle citation target when provided
+  useEffect(() => {
+    if (citationTarget && pdf) {
+      console.log('Navigating to citation target:', citationTarget);
+      // Navigate to the specified page
+      handlePageChange(citationTarget.page);
+
+      // Set the highlighted annotation if provided
+      if (citationTarget.annotationId) {
+        setHighlightedAnnotation(citationTarget.annotationId);
+        // Clear highlight after 3 seconds
+        setTimeout(() => setHighlightedAnnotation(null), 3000);
+      }
+    }
+  }, [citationTarget, pdf]);
 
   // Load page when PDF is ready or page changes
   useEffect(() => {

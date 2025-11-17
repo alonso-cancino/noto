@@ -6,9 +6,14 @@ import { PDFViewer } from '../PDFViewer';
 interface EditorPaneProps {
   file: FileMetadata | null;
   onEditorStateChange?: (wordCount: number, isDirty: boolean) => void;
+  citationTarget?: { page: number; annotationId?: string } | null;
 }
 
-export const EditorPane: React.FC<EditorPaneProps> = ({ file, onEditorStateChange }) => {
+export const EditorPane: React.FC<EditorPaneProps> = ({
+  file,
+  onEditorStateChange,
+  citationTarget,
+}) => {
   if (!file) {
     return (
       <div className="h-full flex items-center justify-center bg-vscode-editor text-vscode-text-secondary">
@@ -52,6 +57,7 @@ export const EditorPane: React.FC<EditorPaneProps> = ({ file, onEditorStateChang
           ) : file.name.endsWith('.pdf') ? (
             <PDFViewer
               filePath={file.path}
+              citationTarget={citationTarget}
               onError={(error) => {
                 console.error('PDF viewer error:', error);
               }}
