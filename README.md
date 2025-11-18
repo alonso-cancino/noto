@@ -11,53 +11,76 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## Current Status
 
-**Version:** 0.3.0-alpha (Early Development)
-**Status:** Phases 0, 1-2, and 3 Complete
+**Version:** 1.0.0
+**Status:** Production Ready 🚀
 
-### ✅ What Works Now
+All planned features are complete! Noto v1.0.0 includes:
+
+### ✅ Core Features
 - **Markdown Editor** - Full markdown support with live preview (Monaco Editor)
 - **LaTeX Math** - Beautiful math rendering with KaTeX (`$inline$` and `$$block$$` equations)
 - **PDF Viewer** - Full PDF viewing with page navigation, zoom, and text selection
-- **PDF Search** - Search text within PDF documents
-- **Page Thumbnails** - Visual page navigation sidebar
-- **Drag & Drop Import** - Drop PDF files into the app to import them
-- **Local File Storage** - Create, edit, and organize markdown files and PDFs locally
-- **Auto-Save** - Automatic saving with dirty state tracking
-- **Code Highlighting** - Syntax highlighting in code blocks
-- **Testing Infrastructure** - Jest, Playwright E2E, ESLint, CI/CD with GitHub Actions
+- **PDF Annotations** - Highlight, add notes, and create area annotations
+- **Citation System** - Quote PDFs in markdown with bidirectional linking
+- **Google Drive Sync** - Cloud synchronization with offline support
+- **Full-Text Search** - Search across all notes and PDFs
+- **Command Palette** - Quick command access (Cmd/Ctrl+P)
+- **Keyboard Shortcuts** - Productivity-focused shortcuts
+- **Export** - Export notes to HTML and PDF
+- **Multiple Tabs** - Work with multiple files simultaneously
+- **Recent Files** - Quick access to recently opened files
+- **Auto-Updates** - Automatic updates (macOS/Windows)
+- **Settings Panel** - Customize your workflow
 
-### 🚧 In Development (See [PR_ROADMAP.md](PR_ROADMAP.md))
-- PDF Annotations (Phase 4)
-- Citation System (Phase 5)
-- Google Drive Sync (Phase 6)
-- Search & Command Palette (Phase 7)
-- Windows/Mac/Linux Installers (Phase 8)
+### 📦 Installation
+Download the latest release for your platform:
+- **macOS**: Download `.dmg` installer (Intel & Apple Silicon)
+- **Windows**: Download `.exe` installer or portable version
+- **Linux**: Download `.AppImage`, `.deb`, or `.rpm` package
 
-## Current Features
+See [Releases](https://github.com/yourusername/noto/releases) for downloads.
 
-### Core Functionality (Implemented)
+## Features
 
-- **Markdown Editor** ✅ - Write notes with full markdown support and live preview
-- **LaTeX Math** ✅ - Beautiful math rendering with KaTeX
-- **VSCode Editor** ✅ - Monaco Editor with syntax highlighting
-- **PDF Viewer** ✅ - Full-featured PDF viewing with PDF.js
-  - Page-by-page navigation (← → arrow keys)
-  - Zoom controls (50% - 300%)
-  - Text selection and copying
-  - In-document search
-  - Page thumbnails sidebar
-  - Drag & drop PDF import
-- **Local Storage** ✅ - File system for notes and PDFs
-- **Auto-Save** ✅ - Never lose your work
-- **Testing & CI/CD** ✅ - Comprehensive testing infrastructure
+### Editor
+- **Monaco Editor** - The same editor as Visual Studio Code
+- **Live Preview** - See your markdown rendered in real-time
+- **LaTeX Math** - Inline (`$...$`) and block (`$$...$$`) equations
+- **Code Highlighting** - Syntax highlighting for 100+ languages
+- **Auto-Save** - Never lose your work with automatic saving
 
-### Planned Features (Coming Soon)
+### PDF Annotations
+- **Highlight Tool** - 5 color options for highlighting text
+- **Sticky Notes** - Add comments and thoughts
+- **Area Selection** - Annotate regions of interest
+- **Annotations Sidebar** - View and manage all annotations
+- **Persistent Storage** - Annotations saved as JSON files
 
-- **PDF Annotations** 🚧 - Highlight text, add notes, area selections (Phase 4)
-- **Citation System** 🚧 - Quote PDFs in markdown with bidirectional links (Phase 5)
-- **Google Drive Sync** 🚧 - Cloud synchronization with offline support (Phase 6)
-- **Full-Text Search** 🚧 - Search across all notes and PDFs (Phase 7)
-- **Command Palette** 🚧 - Quick command access (Phase 7)
+### Citations & Linking
+- **Quote in Note** - Quote PDF highlights directly into markdown
+- **Custom Protocol** - `noto://` URLs for deep linking
+- **Backlinks Panel** - See all notes citing a PDF
+- **Bidirectional Links** - Navigate between notes and sources
+
+### Cloud Sync
+- **Google Drive Integration** - Sync files to Google Drive
+- **Offline Support** - Work offline, sync when connected
+- **Conflict Resolution** - Smart merging of changes
+- **Background Sync** - Automatic syncing every 30 seconds
+
+### Productivity
+- **Full-Text Search** - Search across all notes and PDFs (Cmd/Ctrl+F)
+- **Command Palette** - Quick access to all commands (Cmd/Ctrl+P)
+- **Keyboard Shortcuts** - Productivity-focused shortcuts
+- **Multiple Tabs** - Work with multiple files at once
+- **Recent Files** - Quick access to recently opened files
+- **Export** - Export notes to HTML and PDF
+
+### Distribution
+- **Native Installers** - DMG (macOS), NSIS (Windows), deb/rpm/AppImage (Linux)
+- **Auto-Updates** - Automatic updates on macOS and Windows
+- **Code Signed** - Properly signed for security
+- **Multi-Architecture** - Supports x64 and arm64
 
 ## Installation
 

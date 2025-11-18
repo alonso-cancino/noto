@@ -213,11 +213,16 @@ const content = await window.api['file:read']('path/to/file.md');
 - **Multiple tabs** support (PR-043)
 - **Recent files** tracking (PR-044)
 
-### 🔜 Phase 8: Build & Distribution (Next)
-- App icons for all platforms
-- Code signing
-- Auto-updater
-- Final release v1.0.0
+### ✅ Phase 8: Build & Distribution (Complete)
+- App icons for all platforms (macOS .icns, Windows .ico, Linux .png)
+- Code signing configuration (macOS hardened runtime + entitlements, Windows Authenticode)
+- Auto-updater with electron-updater (background checks, download progress, install & restart)
+- Enhanced installers (DMG with custom window, NSIS with license, deb/rpm packages)
+- Multi-architecture support (x64, arm64)
+- GitHub Actions release workflow (automated builds for all platforms)
+- Build validation and smoke tests
+- Comprehensive documentation (CODE_SIGNING.md, release scripts)
+- Final release v1.0.0 preparation
 
 ## Critical Implementation Details
 
