@@ -6,6 +6,7 @@ import { registerSettingsHandlers } from './settings-handlers';
 import { registerRecentFilesHandlers } from './recent-handlers';
 import { registerExportHandlers } from './export-handlers';
 import { registerUpdaterHandlers } from './updater-handlers';
+import { registerAppHandlers } from './app-handlers';
 
 /**
  * Register all IPC handlers
@@ -19,6 +20,7 @@ export function registerAllHandlers() {
   registerRecentFilesHandlers();
   registerExportHandlers();
   registerUpdaterHandlers();
+  registerAppHandlers();
   // Future: registerDriveHandlers();
 
   console.log('✓ All IPC handlers registered');

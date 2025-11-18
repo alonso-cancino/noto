@@ -66,5 +66,22 @@ export function registerFileHandlers() {
     }
   });
 
+  // Import PDF file
+  ipcMain.handle('file:import-pdf', async (_event, fileName: string, base64Data: string): Promise<void> => {
+    try {
+      // Decode base64 to buffer
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      // Ensure the filename has .pdf extension
+      const pdfFileName = fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`;
+
+      // Write the file as binary data
+      await localStorage.writeFileBinary(pdfFileName, buffer);
+    } catch (error) {
+      console.error('Error importing PDF:', error);
+      throw error;
+    }
+  });
+
   console.log('✓ File IPC handlers registered');
 }

@@ -70,6 +70,20 @@ export class LocalStorage {
   }
 
   /**
+   * Write binary file contents (for PDFs, images, etc.)
+   */
+  async writeFileBinary(relativePath: string, buffer: Buffer): Promise<void> {
+    const fullPath = this.getFullPath(relativePath);
+    await this.validatePath(relativePath);
+
+    // Ensure parent directory exists
+    const dir = path.dirname(fullPath);
+    await fs.mkdir(dir, { recursive: true });
+
+    await fs.writeFile(fullPath, buffer);
+  }
+
+  /**
    * Delete file or folder
    */
   async deleteFile(relativePath: string): Promise<void> {
