@@ -10,6 +10,7 @@
 
 import { BrowserWindow, safeStorage } from 'electron';
 import { google } from 'googleapis';
+import type { OAuth2Client } from 'google-auth-library';
 import Store from 'electron-store';
 
 export interface OAuthTokens {
@@ -27,12 +28,10 @@ export interface GoogleCredentials {
 }
 
 export class DriveAuthService {
-  private oauth2Client: any;
+  private oauth2Client: OAuth2Client;
   private store: Store;
-  private credentials: GoogleCredentials;
 
   constructor(credentials: GoogleCredentials) {
-    this.credentials = credentials;
     this.store = new Store();
 
     this.oauth2Client = new google.auth.OAuth2(
@@ -95,7 +94,7 @@ export class DriveAuthService {
       authWindow.loadURL(authUrl);
 
       // Listen for redirect to callback URL
-      authWindow.webContents.on('will-redirect', (event, url) => {
+      authWindow.webContents.on('will-redirect', (_event, url) => {
         const urlObj = new URL(url);
         const code = urlObj.searchParams.get('code');
 
@@ -175,7 +174,10 @@ export class DriveAuthService {
    * Sign out - clear stored tokens
    */
   async signOut(): Promise<void> {
-    await this.oauth2Client.revokeToken(this.oauth2Client.credentials.access_token);
+    const accessToken = this.oauth2Client.credentials.access_token;
+    if (accessToken) {
+      await this.oauth2Client.revokeToken(accessToken);
+    }
     this.store.delete('oauth_tokens_encrypted');
     this.oauth2Client.setCredentials({});
   }

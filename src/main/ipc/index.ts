@@ -1,6 +1,10 @@
 import { registerFileHandlers } from './file-handlers';
 import { registerAnnotationHandlers } from './annotation-handlers';
 import { registerCitationHandlers } from './citation-handlers';
+import { registerSearchHandlers } from './search-handlers';
+import { registerSettingsHandlers } from './settings-handlers';
+import { registerRecentFilesHandlers } from './recent-handlers';
+import { registerExportHandlers } from './export-handlers';
 
 /**
  * Register all IPC handlers
@@ -9,9 +13,11 @@ export function registerAllHandlers() {
   registerFileHandlers();
   registerAnnotationHandlers();
   registerCitationHandlers();
+  registerSearchHandlers();
+  registerSettingsHandlers();
+  registerRecentFilesHandlers();
+  registerExportHandlers();
   // Future: registerDriveHandlers();
-  // Future: registerSearchHandlers();
-  // Future: registerSettingsHandlers();
 
   console.log('✓ All IPC handlers registered');
 }

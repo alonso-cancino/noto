@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { AnnotationLayer } from '../AnnotationLayer';
 import { Annotation } from '../../../../shared/types';
 
@@ -13,6 +13,7 @@ const mockPage = {
     width: 800,
     height: 1000,
   })),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any;
 
 describe('AnnotationLayer', () => {

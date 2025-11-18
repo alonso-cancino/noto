@@ -220,7 +220,7 @@ export class DriveService {
     return {
       changes,
       newStartPageToken: response.data.newStartPageToken!,
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken || undefined,
     };
   }
 
@@ -232,6 +232,7 @@ export class DriveService {
     let currentPageToken = pageToken;
     let newStartPageToken = '';
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const result = await this.getChanges(currentPageToken);
       allChanges = allChanges.concat(result.changes);

@@ -159,7 +159,7 @@ export class HighlightTool extends AnnotationTool {
     }
   }
 
-  async onMouseUp(event: MouseEvent, container: HTMLElement): Promise<Annotation | null> {
+  async onMouseUp(_event: MouseEvent, _container: HTMLElement): Promise<Annotation | null> {
     if (!this.isActive || !this.currentSelection) {
       this.reset();
       return null;

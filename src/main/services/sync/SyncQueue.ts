@@ -29,11 +29,13 @@ export interface SyncQueueEvents {
   'queue:processing': () => void;
 }
 
-export declare interface SyncQueue {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export interface SyncQueue {
   on<U extends keyof SyncQueueEvents>(event: U, listener: SyncQueueEvents[U]): this;
   emit<U extends keyof SyncQueueEvents>(event: U, ...args: Parameters<SyncQueueEvents[U]>): boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class SyncQueue extends EventEmitter {
   private queue: Map<string, UploadOperation> = new Map();
   private processing = false;
@@ -119,7 +121,8 @@ export class SyncQueue extends EventEmitter {
     // Process operations one at a time
     while (this.queue.size > 0 && this.isOnline) {
       // Get first operation (FIFO)
-      const [path, operation] = this.queue.entries().next().value;
+      const entry = this.queue.entries().next().value as [string, UploadOperation];
+      const [path, operation] = entry;
 
       try {
         this.emit('upload:start', path);
@@ -149,7 +152,7 @@ export class SyncQueue extends EventEmitter {
    * Process a single operation
    * Returns true if operation should be retried, false if successful
    */
-  private async processOperation(operation: UploadOperation): Promise<boolean> {
+  private async processOperation(_operation: UploadOperation): Promise<boolean> {
     // This will be overridden by the sync engine
     // For now, just return false (success)
     return false;
@@ -160,12 +163,8 @@ export class SyncQueue extends EventEmitter {
    */
   setProcessor(processor: (operation: UploadOperation) => Promise<void>): void {
     this.processOperation = async (operation: UploadOperation): Promise<boolean> => {
-      try {
-        await processor(operation);
-        return false; // Success
-      } catch (error) {
-        throw error; // Will be caught and handled
-      }
+      await processor(operation);
+      return false; // Success
     };
   }
 

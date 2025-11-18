@@ -2,7 +2,7 @@
  * Tests for SyncQueue
  */
 
-import { SyncQueue, UploadOperation } from '../SyncQueue';
+import { SyncQueue } from '../SyncQueue';
 
 describe('SyncQueue', () => {
   let queue: SyncQueue;

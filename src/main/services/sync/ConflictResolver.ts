@@ -8,19 +8,7 @@
  */
 
 import { FileState } from './SyncEngine';
-
-export interface Annotation {
-  id: string;
-  type: 'highlight' | 'note' | 'area';
-  modifiedAt: string;
-  [key: string]: any;
-}
-
-export interface AnnotationFile {
-  version: number;
-  pdfPath: string;
-  annotations: Annotation[];
-}
+import type { Annotation, AnnotationFile } from '../../../shared/types';
 
 export type ConflictResolution = 'keep-local' | 'use-remote' | 'merge' | 'manual';
 

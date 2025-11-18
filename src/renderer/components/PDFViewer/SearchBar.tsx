@@ -35,7 +35,7 @@ export function SearchBar({ pdf, onResultSelect }: SearchBarProps): JSX.Element 
 
         // Combine all text items into a single string
         const pageText = textContent.items
-          .map((item: any) => item.str)
+          .map((item: { str: string }) => item.str)
           .join(' ');
 
         // Find all occurrences in the page

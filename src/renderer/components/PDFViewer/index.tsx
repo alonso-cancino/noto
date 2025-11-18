@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PDFPageProxy } from 'pdfjs-dist/types/src/display/api';
 import { usePDF } from '../../hooks/usePDF';
 import { PDFCanvas } from './PDFCanvas';
@@ -21,9 +21,26 @@ export function PDFViewer({
   const [scale, setScale] = useState<number>(1.0);
   const [showThumbnails, setShowThumbnails] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
-  const [highlightedAnnotation, setHighlightedAnnotation] = useState<
+  const [_highlightedAnnotation, setHighlightedAnnotation] = useState<
     string | null
   >(null);
+
+  // Load page when PDF is ready or page changes
+  useEffect(() => {
+    if (pdf && currentPage > 0) {
+      getPage(currentPage).then((page) => {
+        setCurrentPageProxy(page);
+      });
+    }
+  }, [pdf, currentPage, getPage]);
+
+  const handlePageChange = useCallback((pageNumber: number) => {
+    getPage(pageNumber).then((page) => {
+      if (page) {
+        setCurrentPageProxy(page);
+      }
+    });
+  }, [getPage]);
 
   // Handle citation target when provided
   useEffect(() => {
@@ -39,24 +56,7 @@ export function PDFViewer({
         setTimeout(() => setHighlightedAnnotation(null), 3000);
       }
     }
-  }, [citationTarget, pdf]);
-
-  // Load page when PDF is ready or page changes
-  useEffect(() => {
-    if (pdf && currentPage > 0) {
-      getPage(currentPage).then((page) => {
-        setCurrentPageProxy(page);
-      });
-    }
-  }, [pdf, currentPage, getPage]);
-
-  const handlePageChange = (pageNumber: number) => {
-    getPage(pageNumber).then((page) => {
-      if (page) {
-        setCurrentPageProxy(page);
-      }
-    });
-  };
+  }, [citationTarget, pdf, handlePageChange]);
 
   // Call error callback if provided
   useEffect(() => {

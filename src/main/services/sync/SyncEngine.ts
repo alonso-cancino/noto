@@ -27,7 +27,8 @@ export interface SyncEngineEvents {
   'sync:quota-exceeded': (message: string) => void;
 }
 
-export declare interface SyncEngine {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export interface SyncEngine {
   on<U extends keyof SyncEngineEvents>(event: U, listener: SyncEngineEvents[U]): this;
   emit<U extends keyof SyncEngineEvents>(event: U, ...args: Parameters<SyncEngineEvents[U]>): boolean;
 }
@@ -41,6 +42,7 @@ export interface FileState {
   lastSyncTime?: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class SyncEngine extends EventEmitter {
   private drive: DriveService;
   private uploadQueue: SyncQueue;
@@ -55,7 +57,6 @@ export class SyncEngine extends EventEmitter {
   private getFileCallback: ((path: string) => Promise<FileState | null>) | null = null;
   private saveFileCallback: ((state: FileState) => Promise<void>) | null = null;
   private deleteFileCallback: ((path: string) => Promise<void>) | null = null;
-  private getAllFilesCallback: (() => Promise<FileState[]>) | null = null;
 
   constructor(driveService: DriveService) {
     super();
@@ -77,7 +78,7 @@ export class SyncEngine extends EventEmitter {
       this.emit('sync:uploaded', path);
     });
 
-    this.uploadQueue.on('upload:failed', (path, error) => {
+    this.uploadQueue.on('upload:failed', (_path, error) => {
       this.emit('sync:error', error);
     });
   }
@@ -89,12 +90,10 @@ export class SyncEngine extends EventEmitter {
     getFile: (path: string) => Promise<FileState | null>;
     saveFile: (state: FileState) => Promise<void>;
     deleteFile: (path: string) => Promise<void>;
-    getAllFiles: () => Promise<FileState[]>;
   }): void {
     this.getFileCallback = callbacks.getFile;
     this.saveFileCallback = callbacks.saveFile;
     this.deleteFileCallback = callbacks.deleteFile;
-    this.getAllFilesCallback = callbacks.getAllFiles;
   }
 
   /**

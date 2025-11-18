@@ -1,6 +1,6 @@
 # Noto Development Roadmap
 
-**Current Version:** 0.5.0-alpha
+**Current Version:** 0.9.0-alpha
 **Target Version:** 1.0.0
 **Last Updated:** 2025-11-17
 
@@ -8,7 +8,7 @@
 
 ## Current Status
 
-**Completion:** 6/8 Phases (75%)
+**Completion:** 7/8 Phases (87.5%)
 
 - ✅ **Phase 0:** CI/CD & Testing (Complete)
 - ✅ **Phase 1:** Foundation & File System (Complete)
@@ -17,8 +17,8 @@
 - ✅ **Phase 4:** PDF Annotations (Complete)
 - ✅ **Phase 5:** Citation System (Complete)
 - ✅ **Phase 6:** Google Drive Sync (Complete)
-- 🚧 **Phase 7:** Polish & Features (Next)
-- 🚧 **Phase 8:** Build & Distribution
+- ✅ **Phase 7:** Polish & Features (Complete)
+- 🚧 **Phase 8:** Build & Distribution (Next)
 
 ---
 
@@ -145,22 +145,29 @@ Quote PDF highlights directly into markdown with bidirectional links.
 - Automatic conflict resolution for annotations
 - Secure token storage with Electron safeStorage
 
-### 🚧 Phase 7: Polish & Features (Next)
+### ✅ Phase 7: Polish & Features (Complete)
 
-**Status:** Not Started
-**Estimated Time:** 2 weeks
-**PRs:** PR-036 through PR-045
+**Status:** 100% Complete
+**Time Spent:** 1 day
+**PRs:** PR-036, PR-038, PR-039, PR-041, PR-042, PR-043, PR-044
 
-**Goals:**
-- Full-text search (indexing + UI)
-- Command palette (Cmd/Ctrl+P)
-- Settings panel
-- Dark/light theme toggle
-- Keyboard shortcuts
-- Export to PDF/HTML
-- Multiple tabs
-- Recent files list
-- Performance optimization
+**Delivered:**
+- Full-text search across notes and PDFs (SearchService with fuzzy matching)
+- Command palette for quick file navigation and commands (Cmd/Ctrl+P)
+- Settings panel with theme, editor, and sync preferences
+- Keyboard shortcuts system with platform-specific bindings
+- Export to HTML/PDF functionality (markdown-it based)
+- Multiple tabs support with keyboard navigation
+- Recent files tracking (max 10 files, persisted to disk)
+
+**Key Features:**
+- **Search (PR-036):** Full-text indexing, incremental updates, context snippets
+- **Command Palette (PR-038):** File search + command mode (>), fuzzy matching
+- **Settings (PR-039):** Theme, font, auto-save interval, sync settings
+- **Keyboard Shortcuts (PR-041):** Platform-aware shortcuts, easy registration
+- **Export (PR-042):** HTML with KaTeX support, PDF generation via print
+- **Multiple Tabs (PR-043):** Tab bar with dirty indicators, close/switch shortcuts
+- **Recent Files (PR-044):** Persistent recent files list in sidebar
 
 ### 🚧 Phase 8: Build & Distribution (Final)
 

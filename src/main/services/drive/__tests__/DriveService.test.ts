@@ -18,6 +18,10 @@ describe('DriveService', () => {
       clientSecret: 'test',
       redirectUri: 'test',
     });
+
+    // Mock the isAuthenticated method
+    authService.isAuthenticated = jest.fn().mockResolvedValue(false);
+
     driveService = new DriveService(authService);
   });
 

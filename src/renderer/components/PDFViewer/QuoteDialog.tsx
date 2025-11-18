@@ -3,7 +3,7 @@
  * Allows users to select a note file to quote an annotation into
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Annotation, FileMetadata } from '../../../shared/types';
 import { citationService } from '../../services/CitationService';
 
@@ -25,11 +25,6 @@ export function QuoteDialog({
   const [loading, setLoading] = useState(true);
   const [citationPreview, setCitationPreview] = useState<string>('');
 
-  useEffect(() => {
-    loadNotes();
-    generateCitationPreview();
-  }, []);
-
   const loadNotes = async () => {
     try {
       const files = await window.api['file:list']();
@@ -48,14 +43,19 @@ export function QuoteDialog({
     }
   };
 
-  const generateCitationPreview = () => {
+  const generateCitationPreview = useCallback(() => {
     const citation = citationService.createQuoteCitation(
       pdfPath,
       annotation,
       annotation.text
     );
     setCitationPreview(citation);
-  };
+  }, [pdfPath, annotation]);
+
+  useEffect(() => {
+    loadNotes();
+    generateCitationPreview();
+  }, [generateCitationPreview]);
 
   const handleQuote = async () => {
     if (!selectedNote) {

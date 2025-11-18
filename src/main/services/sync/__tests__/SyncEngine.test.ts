@@ -13,6 +13,7 @@ describe('SyncEngine', () => {
   let syncEngine: SyncEngine;
 
   beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     driveService = new DriveService(null as any);
     syncEngine = new SyncEngine(driveService);
 
@@ -21,7 +22,6 @@ describe('SyncEngine', () => {
       getFile: async () => null,
       saveFile: async () => {},
       deleteFile: async () => {},
-      getAllFiles: async () => [],
     });
   });
 

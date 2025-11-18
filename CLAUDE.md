@@ -12,6 +12,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 3. Quote PDF segments directly into markdown notes
 4. Google Drive synchronization with offline support
 5. Full-text search across notes and PDFs
+6. Command palette for quick navigation (Cmd/Ctrl+P)
+7. Multiple tabs support
+8. Export to HTML/PDF
+9. Recent files tracking
+10. Keyboard shortcuts
 
 ### Tech Stack
 - **Electron** - Desktop framework with main/renderer process separation
@@ -145,6 +150,12 @@ const content = await window.api['file:read']('path/to/file.md');
 
 ## Current Implementation Status
 
+### ✅ Phase 0: CI/CD & Testing (Complete)
+- Jest unit testing framework
+- ESLint + Prettier code quality
+- GitHub Actions CI pipeline
+- Playwright E2E testing setup
+
 ### ✅ Phase 1: Foundation (Complete)
 - Local file storage with LocalStorage service
 - File explorer with tree view
@@ -159,9 +170,54 @@ const content = await window.api['file:read']('path/to/file.md');
 - Auto-save (500ms debounce)
 - Word count in status bar
 
-### 🔜 Phase 3: PDF Viewer (Next)
-- PDF.js integration needed
-- See ROADMAP.md for details
+### ✅ Phase 3: PDF Viewer (Complete)
+- PDF.js integration with worker
+- Full PDF rendering with navigation
+- Zoom controls (50%-300%)
+- Thumbnail sidebar
+- Text selection and copying
+- In-PDF search
+
+### ✅ Phase 4: PDF Annotations (Complete)
+- AnnotationService with CRUD operations
+- JSON storage (.pdf.annotations.json files)
+- SVG overlay layer
+- Highlight tool with 5 colors
+- Sticky note tool
+- Area selection tool
+- Annotations sidebar
+- Context menu for edit/delete
+
+### ✅ Phase 5: Citation System (Complete)
+- Custom noto:// protocol handler
+- Citation formatting service
+- "Quote in Note" feature
+- Citation link rendering in preview
+- Backlinks panel
+
+### ✅ Phase 6: Google Drive Sync (Complete)
+- OAuth 2.0 authentication
+- Google Drive API integration
+- IndexedDB cache layer
+- Sync queue with retry logic
+- Conflict resolution
+- Background watcher
+- Sync status indicators
+
+### ✅ Phase 7: Polish & Features (Complete)
+- **Full-text search** across notes and PDFs (PR-036)
+- **Command palette** for quick navigation (PR-038)
+- **Settings panel** for preferences (PR-039)
+- **Keyboard shortcuts** system (PR-041)
+- **Export to HTML/PDF** (PR-042)
+- **Multiple tabs** support (PR-043)
+- **Recent files** tracking (PR-044)
+
+### 🔜 Phase 8: Build & Distribution (Next)
+- App icons for all platforms
+- Code signing
+- Auto-updater
+- Final release v1.0.0
 
 ## Critical Implementation Details
 
