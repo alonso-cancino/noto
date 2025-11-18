@@ -24,12 +24,18 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "generate-icons": "node scripts/generate-icons.js",
+    "prebuild": "npm run generate-icons || echo 'Icon generation skipped (dependencies not installed)'",
+    "build:full": "bash scripts/build.sh",
+    "release": "bash scripts/release.sh",
+    "validate": "node scripts/validate-build.js"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
     "electron-log": "^5.0.1",
     "electron-store": "^8.2.0",
+    "electron-updater": "^6.1.7",
     "googleapis": "^166.0.0",
     "highlight.js": "^11.9.0",
     "idb": "^8.0.3",
@@ -90,29 +96,130 @@
     "mac": {
       "category": "public.app-category.productivity",
       "target": [
-        "dmg",
-        "zip"
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
       ],
-      "icon": "resources/icon.icns"
+      "icon": "resources/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": false,
+      "darkModeSupport": true,
+      "type": "distribution"
+    },
+    "dmg": {
+      "title": "Install Noto",
+      "icon": "resources/icon.icns",
+      "backgroundColor": "#1e1e1e",
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 140,
+          "y": 180,
+          "type": "file"
+        },
+        {
+          "x": 400,
+          "y": 180,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     },
     "win": {
       "target": [
         "nsis",
         "portable"
       ],
-      "icon": "resources/icon.ico"
+      "icon": "resources/icon.ico",
+      "signingHashAlgorithms": [
+        "sha256"
+      ],
+      "signDlls": true
     },
     "linux": {
       "target": [
-        "AppImage",
-        "deb"
+        {
+          "target": "AppImage",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "rpm",
+          "arch": ["x64", "arm64"]
+        }
       ],
       "category": "Office",
-      "icon": "resources/icon.png"
+      "icon": "resources/icon.png",
+      "desktop": {
+        "Name": "Noto",
+        "Comment": "Research and note-taking application",
+        "Categories": "Office;Education;",
+        "MimeType": "text/markdown;application/pdf;",
+        "Keywords": "notes;markdown;pdf;research;annotation;"
+      },
+      "maintainer": "Noto Team <noto@example.com>",
+      "vendor": "Noto",
+      "synopsis": "Research and note-taking application with PDF annotation"
+    },
+    "deb": {
+      "depends": [
+        "gconf2",
+        "gconf-service",
+        "libnotify4",
+        "libappindicator1",
+        "libxtst6",
+        "libnss3"
+      ],
+      "priority": "optional"
+    },
+    "rpm": {
+      "depends": [
+        "libXScrnSaver"
+      ],
+      "fpm": [
+        "--rpm-rpmbuild-define=_build_id_links none"
+      ]
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Noto",
+      "perMachine": false,
+      "allowElevation": true,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "include": "build/installer.nsh",
+      "license": "build/license.txt",
+      "installerIcon": "resources/icon.ico",
+      "uninstallerIcon": "resources/icon.ico",
+      "installerHeaderIcon": "resources/icon.ico",
+      "displayLanguageSelector": false,
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}.${ext}"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "your-github-username",
+      "repo": "noto",
+      "releaseType": "release"
     }
   },
   "keywords": [

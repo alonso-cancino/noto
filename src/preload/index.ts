@@ -65,6 +65,13 @@ const api: {
   // App operations
   'app:getVersion': () => ipcRenderer.invoke('app:getVersion'),
   'app:openExternal': (url: string) => ipcRenderer.invoke('app:openExternal', url),
+
+  // Auto-updater operations
+  'updater:check-for-updates': () => ipcRenderer.invoke('updater:check-for-updates'),
+  'updater:download-update': () => ipcRenderer.invoke('updater:download-update'),
+  'updater:quit-and-install': () => ipcRenderer.invoke('updater:quit-and-install'),
+  'updater:get-version': () => ipcRenderer.invoke('updater:get-version'),
+  'updater:is-supported': () => ipcRenderer.invoke('updater:is-supported'),
 };
 
 // Event listeners

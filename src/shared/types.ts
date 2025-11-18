@@ -132,6 +132,23 @@ export interface AppSettings {
 }
 
 // ============================================================================
+// Auto-Updater Types
+// ============================================================================
+
+export interface UpdateInfo {
+  version: string;
+  releaseDate?: string;
+  releaseNotes?: string;
+}
+
+export interface DownloadProgress {
+  percent: number;
+  bytesPerSecond: number;
+  transferred: number;
+  total: number;
+}
+
+// ============================================================================
 // IPC Types
 // ============================================================================
 
@@ -190,6 +207,13 @@ export interface IpcHandlers {
   // Export operations
   'export:markdown-to-pdf': (filePath: string, outputPath: string) => Promise<void>;
   'export:markdown-to-html': (filePath: string, outputPath: string) => Promise<void>;
+
+  // Auto-updater operations
+  'updater:check-for-updates': () => Promise<void>;
+  'updater:download-update': () => Promise<void>;
+  'updater:quit-and-install': () => Promise<void>;
+  'updater:get-version': () => Promise<string>;
+  'updater:is-supported': () => Promise<boolean>;
 }
 
 /**
@@ -203,6 +227,12 @@ export interface IpcEvents {
   'file:updated': (data: { path: string }) => void;
   'file:deleted': (data: { path: string }) => void;
   'open-citation': (data: { pdfPath: string; page: number; annotationId?: string }) => void;
+  'updater:checking-for-update': () => void;
+  'updater:update-available': (data: UpdateInfo) => void;
+  'updater:update-not-available': (data: { version: string }) => void;
+  'updater:download-progress': (data: DownloadProgress) => void;
+  'updater:update-downloaded': (data: UpdateInfo) => void;
+  'updater:update-error': (data: { message: string; error: string }) => void;
 }
 
 // ============================================================================

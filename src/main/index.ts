@@ -7,6 +7,7 @@ import { initializeSearchService } from './ipc/search-handlers';
 import { initializeSettingsService } from './ipc/settings-handlers';
 import { initializeRecentFilesService } from './ipc/recent-handlers';
 import { initializeExportService } from './ipc/export-handlers';
+import { autoUpdaterService } from './services/AutoUpdater';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -74,6 +75,17 @@ app.whenReady().then(async () => {
   // Create window
   createWindow();
 
+  // Initialize auto-updater (only in production)
+  if (process.env.NODE_ENV !== 'development' && mainWindow) {
+    autoUpdaterService.setMainWindow(mainWindow);
+    if (autoUpdaterService.isUpdateSupported()) {
+      autoUpdaterService.startUpdateChecks();
+      console.log('✓ Auto-updater initialized');
+    } else {
+      console.log('ℹ Auto-updates not supported on this platform');
+    }
+  }
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
@@ -82,6 +94,9 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
+  // Stop update checks
+  autoUpdaterService.stopUpdateChecks();
+
   if (process.platform !== 'darwin') {
     app.quit();
   }
