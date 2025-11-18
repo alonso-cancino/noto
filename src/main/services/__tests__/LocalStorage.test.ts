@@ -264,8 +264,9 @@ describe('LocalStorage', () => {
 
       expect(result).toHaveLength(3);
       expect(result[0].type).toBe('folder');
-      expect(result[1].type).toBe('markdown');
-      expect(result[2].type).toBe('pdf');
+      // Files are sorted alphabetically: document.pdf comes before test.md
+      expect(result[1].type).toBe('pdf');
+      expect(result[2].type).toBe('markdown');
     });
 
     it('should skip hidden files except annotations', async () => {
