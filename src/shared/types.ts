@@ -193,7 +193,7 @@ export interface IpcHandlers {
     targetPath: string,
     insertPosition?: number
   ) => Promise<void>;
-  'citation:getBacklinks': (pdfPath: string) => Promise<Map<string, Annotation[]>>;
+  'citation:getBacklinks': (pdfPath: string) => Promise<Record<string, Annotation[]>>;
 
   // App operations
   'app:getVersion': () => Promise<string>;
