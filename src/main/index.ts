@@ -35,7 +35,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: false,
-      preload: path.join(__dirname, '../preload/index.js'),
+      preload: path.join(__dirname, '../../preload/index.js'),
     },
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: 15, y: 15 },
@@ -48,7 +48,7 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   } else {
     // Production mode - load from built files
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+    mainWindow.loadFile(path.join(__dirname, '../../renderer/index.html'));
   }
 
   mainWindow.on('closed', () => {
