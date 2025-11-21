@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:main\"",
     "dev:renderer": "vite",
-    "dev:main": "tsc -p tsconfig.main.json && electron . --inspect",
+    "dev:main": "cross-env NODE_ENV=development tsc -p tsconfig.main.json && electron . --inspect",
     "build": "npm run build:renderer && npm run build:main",
     "build:renderer": "vite build",
     "build:main": "tsc -p tsconfig.main.json",
@@ -76,6 +76,7 @@
     "@vitejs/plugin-react": "^4.2.0",
     "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.2",
+    "cross-env": "^10.1.0",
     "electron": "^27.1.0",
     "electron-builder": "^24.9.1",
     "eslint": "^8.54.0",
