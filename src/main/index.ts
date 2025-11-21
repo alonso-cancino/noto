@@ -35,7 +35,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: false,
-      preload: path.join(__dirname, '../../preload/index.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
     },
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: 15, y: 15 },

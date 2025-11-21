@@ -109,7 +109,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     }
 
     setSelectedIndex(0);
-  }, [query, files, recentFiles, getCommands]);
+  }, [query, files, recentFiles]);
 
   // Get available commands
   const getCommands = useCallback((): Command[] => {
