@@ -1,0 +1,155 @@
+/**
+ * Custom Milkdown theme - VSCode Dark style
+ */
+
+/* Base editor container */
+.milkdown {
+  background-color: #1e1e1e !important;
+  color: #cccccc !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  padding: 2rem;
+  height: 100%;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ProseMirror editor */
+.milkdown .ProseMirror {
+  background-color: #1e1e1e !important;
+  color: #cccccc !important;
+  outline: none !important;
+  min-height: 100%;
+}
+
+/* Override Nord theme colors to match VSCode dark */
+.milkdown .editor {
+  background-color: #1e1e1e !important;
+  color: #cccccc !important;
+}
+
+/* Headings */
+.milkdown h1 {
+  color: #ffffff !important;
+  border-bottom: 1px solid #3e3e42 !important;
+  font-size: 2em !important;
+  padding-bottom: 0.3em !important;
+}
+
+.milkdown h2 {
+  color: #ffffff !important;
+  border-bottom: 1px solid #3e3e42 !important;
+  font-size: 1.5em !important;
+  padding-bottom: 0.3em !important;
+}
+
+.milkdown h3,
+.milkdown h4,
+.milkdown h5,
+.milkdown h6 {
+  color: #ffffff !important;
+}
+
+/* Links */
+.milkdown a {
+  color: #007acc !important;
+  text-decoration: none !important;
+}
+
+.milkdown a:hover {
+  text-decoration: underline !important;
+}
+
+/* Code blocks */
+.milkdown pre {
+  background-color: #1e1e1e !important;
+  border: 1px solid #3e3e42 !important;
+  border-radius: 6px !important;
+  padding: 1em !important;
+}
+
+.milkdown code {
+  background-color: #252526 !important;
+  color: #cccccc !important;
+  padding: 0.2em 0.4em !important;
+  border-radius: 3px !important;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+}
+
+/* Blockquotes */
+.milkdown blockquote {
+  border-left: 4px solid #3e3e42 !important;
+  color: #858585 !important;
+  padding-left: 1em !important;
+  font-style: italic !important;
+}
+
+/* Tables */
+.milkdown table {
+  border-collapse: collapse !important;
+}
+
+.milkdown th,
+.milkdown td {
+  border: 1px solid #3e3e42 !important;
+  padding: 0.5em !important;
+}
+
+.milkdown th {
+  background-color: #252526 !important;
+  font-weight: 600 !important;
+}
+
+.milkdown tr:nth-child(even) {
+  background-color: #252526 !important;
+}
+
+/* Horizontal rule */
+.milkdown hr {
+  border: none !important;
+  border-top: 1px solid #3e3e42 !important;
+}
+
+/* Selection */
+.milkdown ::selection {
+  background-color: #264f78 !important;
+}
+
+/* Focus outline */
+.milkdown:focus,
+.milkdown .editor:focus {
+  outline: none !important;
+}
+
+/* Placeholder */
+.milkdown .placeholder {
+  color: #858585 !important;
+}
+
+/* Lists */
+.milkdown ul,
+.milkdown ol {
+  padding-left: 2em !important;
+}
+
+.milkdown li {
+  margin-bottom: 0.25em !important;
+}
+
+/* Strong/Bold */
+.milkdown strong {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* Math (KaTeX) */
+.milkdown .katex {
+  font-size: 1.1em !important;
+}
+
+.milkdown .katex-display {
+  margin: 1em 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}

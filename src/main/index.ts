@@ -1,3 +1,7 @@
+// Load environment variables from .env file (MUST be first)
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { app, BrowserWindow, protocol } from 'electron';
 import path from 'path';
 import { registerAllHandlers } from './ipc';

@@ -32,10 +32,12 @@ export function useFileContent({
   const currentFilePathRef = useRef<string | null>(null);
   const contentRef = useRef<string>('');
   const filePathRef = useRef<string | null>(null);
+  const savedContentRef = useRef<string>('');
 
   // Update refs when state changes
   contentRef.current = content;
   filePathRef.current = filePath;
+  savedContentRef.current = savedContent;
 
   // Load file content
   const loadContent = useCallback(async () => {
@@ -68,8 +70,9 @@ export function useFileContent({
   const save = useCallback(async () => {
     const currentPath = filePathRef.current;
     const currentContent = contentRef.current;
+    const currentSaved = savedContentRef.current;
 
-    if (!currentPath || currentContent === savedContent) {
+    if (!currentPath || currentContent === currentSaved) {
       return;
     }
 
@@ -84,13 +87,15 @@ export function useFileContent({
       console.error('Error saving file:', err);
       throw err;
     }
-  }, [savedContent]);
+  }, []); // No dependencies needed, uses only refs
 
   // Set content with dirty tracking
   const setContent = useCallback(
     (newContent: string) => {
+      const currentSaved = savedContentRef.current;
+
       setContentState(newContent);
-      setIsDirty(newContent !== savedContent);
+      setIsDirty(newContent !== currentSaved);
 
       // Auto-save after delay
       if (saveTimeoutRef.current) {
@@ -100,8 +105,9 @@ export function useFileContent({
       saveTimeoutRef.current = setTimeout(async () => {
         const currentPath = filePathRef.current;
         const currentContent = contentRef.current;
+        const savedAtTimeout = savedContentRef.current;
 
-        if (currentPath && currentContent !== savedContent) {
+        if (currentPath && currentContent !== savedAtTimeout) {
           try {
             await window.api['file:write'](currentPath, currentContent);
             setSavedContent(currentContent);
@@ -115,7 +121,7 @@ export function useFileContent({
         }
       }, autoSaveDelay);
     },
-    [savedContent, autoSaveDelay]
+    [autoSaveDelay] // Only depends on autoSaveDelay, not savedContent
   );
 
   // Load content when file path changes
@@ -124,14 +130,15 @@ export function useFileContent({
     if (currentFilePathRef.current && currentFilePathRef.current !== filePath) {
       const previousContent = contentRef.current;
       const previousPath = currentFilePathRef.current;
+      const previousSaved = savedContentRef.current;
 
-      if (previousPath && previousContent !== savedContent) {
+      if (previousPath && previousContent !== previousSaved) {
         window.api['file:write'](previousPath, previousContent).catch(console.error);
       }
     }
 
     loadContent();
-  }, [filePath, loadContent, savedContent]);
+  }, [filePath, loadContent]); // Removed savedContent dependency to prevent infinite loop
 
   // Save before unmount
   useEffect(() => {
