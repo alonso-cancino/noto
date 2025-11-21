@@ -21,8 +21,21 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedPath }
     try {
       setLoading(true);
       setError(null);
-      const fileList = await window.api['file:list']('');
-      setFiles(fileList);
+
+      // Recursively load all files and folders
+      const allFiles: FileMetadata[] = [];
+      const loadFolder = async (folderPath: string) => {
+        const items = await window.api['file:list'](folderPath);
+        for (const item of items) {
+          allFiles.push(item);
+          if (item.type === 'folder') {
+            await loadFolder(item.path);
+          }
+        }
+      };
+
+      await loadFolder('');
+      setFiles(allFiles);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load files');
       console.error('Error loading files:', err);

@@ -58,18 +58,7 @@ const MilkdownEditor: React.FC<WYSIWYGEditorProps> = ({ value, onChange, loading
     editorRef.current = editor;
 
     return editor;
-  }, [value, loading]);
-
-  // Update editor content when value prop changes externally
-  useEffect(() => {
-    if (editorRef.current && value !== editorRef.current.action((ctx) => {
-      return ctx.get(defaultValueCtx);
-    })) {
-      editorRef.current.action((ctx) => {
-        ctx.set(defaultValueCtx, value);
-      });
-    }
-  }, [value]);
+  }, [loading]);
 
   if (loading) {
     return (
