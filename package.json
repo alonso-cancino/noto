@@ -2,7 +2,7 @@
   "name": "noto",
   "version": "1.0.0",
   "description": "A powerful desktop research and note-taking application with PDF annotation and cloud sync",
-  "main": "dist/main/index.js",
+  "main": "dist/main/main/index.js",
   "author": "Your Name <your.email@example.com>",
   "license": "MIT",
   "private": true,
@@ -140,12 +140,7 @@
       "target": [
         "nsis",
         "portable"
-      ],
-      "icon": "resources/icon.ico",
-      "signingHashAlgorithms": [
-        "sha256"
-      ],
-      "signDlls": true
+      ]
     },
     "linux": {
       "target": [
