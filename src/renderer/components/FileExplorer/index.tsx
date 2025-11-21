@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { FileMetadata } from '../../../shared/types';
 import { FileTree } from './FileTree';
 import { InputDialog } from '../InputDialog';
@@ -13,6 +13,7 @@ type DialogType = 'file' | 'folder' | null;
 export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, selectedPath }) => {
   const [dialogType, setDialogType] = useState<DialogType>(null);
   const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -97,6 +98,47 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, select
     setDialogType(null);
   };
 
+  const handleOpenPDF = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    try {
+      for (const file of Array.from(files)) {
+        if (!file.name.endsWith('.pdf')) {
+          alert('Please select PDF files only');
+          continue;
+        }
+
+        // Read file as array buffer
+        const arrayBuffer = await file.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        // Convert to base64 for IPC transfer
+        const base64 = btoa(
+          uint8Array.reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+
+        // Import PDF via IPC
+        await window.api['file:import-pdf'](file.name, base64);
+      }
+
+      // Refresh file tree
+      window.location.reload();
+    } catch (error) {
+      console.error('Error importing PDF:', error);
+      alert('Failed to import PDF: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      // Reset input so the same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   return (
     <div
       className="h-full flex flex-col bg-vscode-sidebar relative"
@@ -108,6 +150,20 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, select
       <div className="flex items-center justify-between p-2 border-b border-vscode-border">
         <span className="text-xs text-vscode-text-secondary uppercase tracking-wide">Explorer</span>
         <div className="flex gap-1">
+          <button
+            onClick={handleOpenPDF}
+            className="p-1 hover:bg-vscode-hover rounded text-vscode-text"
+            title="Open PDF"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+              />
+            </svg>
+          </button>
           <button
             onClick={handleNewFile}
             className="p-1 hover:bg-vscode-hover rounded text-vscode-text"
@@ -138,6 +194,16 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, select
           </button>
         </div>
       </div>
+
+      {/* Hidden file input for PDF selection */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf"
+        multiple
+        onChange={handleFileInputChange}
+        style={{ display: 'none' }}
+      />
 
       {/* File Tree */}
       <div className="flex-1 overflow-hidden">
