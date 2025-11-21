@@ -5,7 +5,7 @@
  * URL Format: noto://pdf/path/to/file.pdf#page=42&annotation=uuid
  */
 
-import { protocol, app } from 'electron';
+import { app } from 'electron';
 import { getMainWindow } from '../index';
 
 /**
@@ -52,20 +52,9 @@ function parseNotoUrl(url: string): {
 
 /**
  * Register the noto:// protocol handler
+ * NOTE: protocol.registerSchemesAsPrivileged() is called in main/index.ts BEFORE app.whenReady()
  */
 export function registerProtocolHandler(): void {
-  // Register protocol as privileged
-  protocol.registerSchemesAsPrivileged([
-    {
-      scheme: 'noto',
-      privileges: {
-        standard: true,
-        secure: true,
-        supportFetchAPI: true,
-      },
-    },
-  ]);
-
   // Handle noto:// URLs when app is already running
   app.on('open-url', (event, url) => {
     event.preventDefault();
