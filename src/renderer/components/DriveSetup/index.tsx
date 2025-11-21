@@ -34,13 +34,14 @@ export const DriveSetup: React.FC<DriveSetupProps> = ({
     setError(null);
 
     try {
-      // TODO: Call IPC to authenticate with Google
-      // await window.api['drive:authenticate']();
+      // Authenticate with Google Drive
+      const success = await window.api['drive:auth']();
 
-      // Mock authentication
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      setStep('select-folder');
+      if (success) {
+        setStep('select-folder');
+      } else {
+        throw new Error('Authentication failed or was cancelled');
+      }
     } catch (err) {
       setError((err as Error).message || 'Authentication failed');
     } finally {
@@ -53,13 +54,17 @@ export const DriveSetup: React.FC<DriveSetupProps> = ({
     setStep('syncing');
 
     try {
-      // TODO: Call IPC to start initial sync
-      // await window.api['drive:initial-sync'](folderId);
+      // Trigger initial sync with selected folder
+      const syncStatus = await window.api['drive:sync']();
 
-      // Mock sync with progress
+      if (syncStatus.status === 'error') {
+        throw new Error(syncStatus.error || 'Sync failed');
+      }
+
+      // Show progress animation
       for (let i = 0; i <= 100; i += 10) {
         setSyncProgress(i);
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
       setStep('complete');

@@ -8,6 +8,7 @@ import { initializeSettingsService } from './ipc/settings-handlers';
 import { initializeRecentFilesService } from './ipc/recent-handlers';
 import { initializeExportService } from './ipc/export-handlers';
 import { autoUpdaterService } from './services/AutoUpdater';
+import { initializeDriveServices } from './ipc/drive-handlers';
 
 // MUST register custom protocol schemes BEFORE app.whenReady()
 // See: https://www.electronjs.org/docs/latest/api/protocol#protocolregisterschemesasprivilegedcustomschemes
@@ -77,6 +78,12 @@ app.whenReady().then(async () => {
   // Initialize export service
   initializeExportService(localStorage.getWorkspacePath());
   console.log('✓ Export service initialized');
+
+  // Initialize Google Drive services (if credentials configured)
+  initializeDriveServices();
+  // Note: OAuth credentials can be set via environment variables:
+  //   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI
+  // See docs/GOOGLE_OAUTH_SETUP.md for setup instructions
 
   // Register custom noto:// protocol
   registerProtocolHandler();
