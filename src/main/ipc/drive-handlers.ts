@@ -57,7 +57,7 @@ export function initializeDriveServices(credentials?: {
     getFile: async (path: string) => {
       try {
         const content = await localStorage.readFile(path);
-        const stats = await localStorage.getMetadata(path);
+        const stats = await localStorage.getFileMetadata(path);
         return {
           path,
           content,
@@ -199,8 +199,9 @@ export function registerDriveHandlers(): void {
     }
 
     try {
-      // List all folders in root
-      const folders = await driveService.listFolders('root');
+      // List all files in root and filter for folders
+      const allFiles = await driveService.listFiles('root');
+      const folders = allFiles.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
 
       // Show folder selection dialog (simple implementation)
       // TODO: Implement proper folder browser UI
@@ -214,18 +215,18 @@ export function registerDriveHandlers(): void {
 
         if (result.response === 0) {
           // Create new folder
-          const folder = await driveService.createFolder('Noto', 'root');
+          const folderId = await driveService.createFolder('Noto', 'root');
           if (syncEngine) {
-            syncEngine.setWorkspaceFolderId(folder.id);
+            syncEngine.setWorkspaceFolderId(folderId);
           }
-          return folder.id;
+          return folderId;
         }
         return null;
       }
 
       // For now, use the first folder or create "Noto" folder
       // TODO: Show actual folder picker UI
-      const notoFolder = folders.find((f) => f.name === 'Noto');
+      const notoFolder = folders.find(f => f.name === 'Noto');
       if (notoFolder) {
         if (syncEngine) {
           syncEngine.setWorkspaceFolderId(notoFolder.id);
@@ -234,11 +235,11 @@ export function registerDriveHandlers(): void {
       }
 
       // Create Noto folder
-      const folder = await driveService.createFolder('Noto', 'root');
+      const folderId = await driveService.createFolder('Noto', 'root');
       if (syncEngine) {
-        syncEngine.setWorkspaceFolderId(folder.id);
+        syncEngine.setWorkspaceFolderId(folderId);
       }
-      return folder.id;
+      return folderId;
     } catch (error) {
       console.error('Folder selection failed:', error);
       throw error;
