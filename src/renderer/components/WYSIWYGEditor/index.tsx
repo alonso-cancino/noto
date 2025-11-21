@@ -14,7 +14,9 @@ import { nord } from '@milkdown/theme-nord';
 import { commonmark } from '@milkdown/preset-commonmark';
 import { listener, listenerCtx } from '@milkdown/plugin-listener';
 import { history } from '@milkdown/plugin-history';
+import { math } from '@milkdown/plugin-math';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
+import 'katex/dist/katex.min.css';
 import './theme.css';
 
 interface WYSIWYGEditorProps {
@@ -43,7 +45,8 @@ const MilkdownEditor: React.FC<WYSIWYGEditorProps> = ({ value, onChange, loading
       .config(nord)
       .use(commonmark)
       .use(listener)
-      .use(history);
+      .use(history)
+      .use(math);
 
     editorRef.current = editor;
 

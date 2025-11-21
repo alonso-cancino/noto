@@ -70,6 +70,17 @@ export class LocalStorage {
   }
 
   /**
+   * Read binary file contents (for PDFs, images, etc.)
+   */
+  async readFileBinary(relativePath: string): Promise<Buffer> {
+    const fullPath = this.getFullPath(relativePath);
+    await this.validatePath(relativePath);
+
+    const buffer = await fs.readFile(fullPath);
+    return buffer;
+  }
+
+  /**
    * Write binary file contents (for PDFs, images, etc.)
    */
   async writeFileBinary(relativePath: string, buffer: Buffer): Promise<void> {

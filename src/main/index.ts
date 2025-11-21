@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { app, BrowserWindow, protocol } from 'electron';
+import { app, BrowserWindow, protocol, Menu, shell } from 'electron';
 import path from 'path';
 import { registerAllHandlers } from './ipc';
 import { localStorage } from './services/LocalStorage';
@@ -29,6 +29,131 @@ protocol.registerSchemesAsPrivileged([
 
 let mainWindow: BrowserWindow | null = null;
 
+function createMenu() {
+  const template: Electron.MenuItemConstructorOptions[] = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'New File',
+          accelerator: 'CmdOrCtrl+N',
+          click: () => {
+            mainWindow?.webContents.send('menu:new-file');
+          },
+        },
+        {
+          label: 'Open PDF',
+          accelerator: 'CmdOrCtrl+O',
+          click: () => {
+            mainWindow?.webContents.send('menu:open-pdf');
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'Save',
+          accelerator: 'CmdOrCtrl+S',
+          click: () => {
+            mainWindow?.webContents.send('menu:save');
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'Export to HTML',
+          click: () => {
+            mainWindow?.webContents.send('menu:export-html');
+          },
+        },
+        {
+          label: 'Export to PDF',
+          click: () => {
+            mainWindow?.webContents.send('menu:export-pdf');
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'Settings',
+          accelerator: 'CmdOrCtrl+,',
+          click: () => {
+            mainWindow?.webContents.send('menu:settings');
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'Quit',
+          accelerator: 'CmdOrCtrl+Q',
+          click: () => {
+            app.quit();
+          },
+        },
+      ],
+    },
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'delete' },
+        { type: 'separator' },
+        { role: 'selectAll' },
+      ],
+    },
+    {
+      label: 'View',
+      submenu: [
+        {
+          label: 'Command Palette',
+          accelerator: 'CmdOrCtrl+P',
+          click: () => {
+            mainWindow?.webContents.send('menu:command-palette');
+          },
+        },
+        {
+          label: 'Toggle Sidebar',
+          accelerator: 'CmdOrCtrl+B',
+          click: () => {
+            mainWindow?.webContents.send('menu:toggle-sidebar');
+          },
+        },
+        { type: 'separator' },
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' },
+        { type: 'separator' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' },
+      ],
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Documentation',
+          click: async () => {
+            await shell.openExternal('https://github.com/yourusername/noto');
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'About Noto',
+          click: () => {
+            mainWindow?.webContents.send('menu:about');
+          },
+        },
+      ],
+    },
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
@@ -42,8 +167,6 @@ function createWindow() {
       sandbox: false,
       preload: path.join(__dirname, '../preload/index.js'),
     },
-    titleBarStyle: 'hidden',
-    trafficLightPosition: { x: 15, y: 15 },
   });
 
   // Load the app
@@ -95,6 +218,10 @@ app.whenReady().then(async () => {
 
   // Register IPC handlers
   registerAllHandlers();
+
+  // Create application menu
+  createMenu();
+  console.log('✓ Application menu created');
 
   // Create window
   createWindow();

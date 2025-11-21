@@ -159,6 +159,7 @@ export interface DownloadProgress {
 export interface IpcHandlers {
   // File operations
   'file:read': (path: string) => Promise<string>;
+  'file:read-binary': (path: string) => Promise<ArrayBuffer>;
   'file:write': (path: string, content: string) => Promise<void>;
   'file:delete': (path: string) => Promise<void>;
   'file:rename': (oldPath: string, newPath: string) => Promise<void>;

@@ -16,6 +16,18 @@ export function registerFileHandlers() {
     }
   });
 
+  // Read binary file (for PDFs, images, etc.)
+  ipcMain.handle('file:read-binary', async (_event, path: string): Promise<ArrayBuffer> => {
+    try {
+      const buffer = await localStorage.readFileBinary(path);
+      // Convert Node Buffer to ArrayBuffer
+      return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+    } catch (error) {
+      console.error('Error reading binary file:', error);
+      throw error;
+    }
+  });
+
   // Write file
   ipcMain.handle('file:write', async (_event, path: string, content: string): Promise<void> => {
     try {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import type { FileMetadata } from '../../../shared/types';
 import { Editor } from '../Editor';
 import { PDFViewer } from '../PDFViewer';
@@ -14,6 +14,13 @@ export const EditorPane: React.FC<EditorPaneProps> = ({
   onEditorStateChange,
   citationTarget,
 }) => {
+  // Memoize callback to prevent infinite re-renders
+  const handleContentChange = useCallback(
+    (content: string, wordCount: number, isDirty: boolean) => {
+      onEditorStateChange?.(wordCount, isDirty);
+    },
+    [onEditorStateChange]
+  );
   if (!file) {
     return (
       <div className="h-full flex items-center justify-center bg-vscode-editor text-vscode-text-secondary">
@@ -51,9 +58,7 @@ export const EditorPane: React.FC<EditorPaneProps> = ({
             <Editor
               key={file.path}
               filePath={file.path}
-              onContentChange={(content, wordCount, isDirty) => {
-                onEditorStateChange?.(wordCount, isDirty);
-              }}
+              onContentChange={handleContentChange}
             />
           ) : file.name.endsWith('.pdf') ? (
             <PDFViewer

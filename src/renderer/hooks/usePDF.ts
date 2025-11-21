@@ -21,14 +21,11 @@ export function usePDF(initialFilePath?: string): UsePDFReturn {
     setError(null);
 
     try {
-      // Read file content via IPC
-      const fileBuffer = await window.api['file:read'](filePath);
+      // Read file as binary via IPC
+      const fileBuffer = await window.api['file:read-binary'](filePath);
 
-      // Convert string/buffer to Uint8Array
-      const uint8Array =
-        typeof fileBuffer === 'string'
-          ? new TextEncoder().encode(fileBuffer)
-          : new Uint8Array(fileBuffer);
+      // Convert ArrayBuffer to Uint8Array
+      const uint8Array = new Uint8Array(fileBuffer);
 
       // Load PDF document
       const loadingTask = pdfjsLib.getDocument({ data: uint8Array });

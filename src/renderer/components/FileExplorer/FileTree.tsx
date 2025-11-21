@@ -34,6 +34,25 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedPath }
     loadFiles();
   };
 
+  const handleFileMove = async (sourcePath: string, targetFolderPath: string) => {
+    try {
+      // Extract file name from source path
+      const fileName = sourcePath.split('/').pop() || sourcePath;
+
+      // Build new path: targetFolder/fileName
+      const newPath = targetFolderPath ? `${targetFolderPath}/${fileName}` : fileName;
+
+      // Use file:rename IPC to move the file
+      await window.api['file:rename'](sourcePath, newPath);
+
+      // Refresh file tree
+      loadFiles();
+    } catch (error) {
+      console.error('Error moving file:', error);
+      alert('Failed to move file: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full text-vscode-text-secondary">
@@ -71,6 +90,7 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedPath }
             file={file}
             onSelect={onFileSelect}
             isSelected={file.path === selectedPath}
+            onFileMove={handleFileMove}
           />
         ))}
       </div>

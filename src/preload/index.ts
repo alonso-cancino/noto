@@ -12,6 +12,7 @@ const api: {
 } = {
   // File operations
   'file:read': (path: string) => ipcRenderer.invoke('file:read', path),
+  'file:read-binary': (path: string) => ipcRenderer.invoke('file:read-binary', path),
   'file:write': (path: string, content: string) => ipcRenderer.invoke('file:write', path, content),
   'file:delete': (path: string) => ipcRenderer.invoke('file:delete', path),
   'file:rename': (oldPath: string, newPath: string) =>

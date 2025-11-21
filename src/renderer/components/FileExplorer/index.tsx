@@ -33,33 +33,43 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, select
     setDragActive(false);
 
     const files = Array.from(e.dataTransfer.files);
-    const pdfFiles = files.filter((file) => file.name.endsWith('.pdf'));
+    const supportedFiles = files.filter(
+      (file) => file.name.endsWith('.pdf') || file.name.endsWith('.md')
+    );
 
-    if (pdfFiles.length === 0) {
-      alert('Please drop PDF files only');
+    if (supportedFiles.length === 0) {
+      alert('Please drop PDF or Markdown files only');
       return;
     }
 
     try {
-      for (const file of pdfFiles) {
-        // Read file as array buffer
-        const arrayBuffer = await file.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
+      for (const file of supportedFiles) {
+        if (file.name.endsWith('.pdf')) {
+          // Read PDF as array buffer
+          const arrayBuffer = await file.arrayBuffer();
+          const uint8Array = new Uint8Array(arrayBuffer);
 
-        // Convert to base64 for IPC transfer
-        const base64 = btoa(
-          uint8Array.reduce((data, byte) => data + String.fromCharCode(byte), '')
-        );
+          // Convert to base64 for IPC transfer
+          const base64 = btoa(
+            uint8Array.reduce((data, byte) => data + String.fromCharCode(byte), '')
+          );
 
-        // Import PDF via IPC
-        await window.api['file:import-pdf'](file.name, base64);
+          // Import PDF via IPC
+          await window.api['file:import-pdf'](file.name, base64);
+        } else if (file.name.endsWith('.md')) {
+          // Read markdown as text
+          const content = await file.text();
+
+          // Write markdown file via IPC
+          await window.api['file:write'](file.name, content);
+        }
       }
 
       // Refresh file tree
       window.location.reload();
     } catch (error) {
-      console.error('Error importing PDF:', error);
-      alert('Failed to import PDF: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      console.error('Error importing files:', error);
+      alert('Failed to import files: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
 
@@ -215,9 +225,9 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, select
         <div className="absolute inset-0 bg-blue-500 bg-opacity-20 border-4 border-blue-500 border-dashed flex items-center justify-center z-50">
           <div className="bg-vscode-sidebar p-4 rounded shadow-lg text-center">
             <div className="text-4xl mb-2">📄</div>
-            <div className="text-vscode-text font-semibold">Drop PDF files here</div>
+            <div className="text-vscode-text font-semibold">Drop files here</div>
             <div className="text-vscode-text-secondary text-sm mt-1">
-              Supports .pdf files
+              Supports .pdf and .md files
             </div>
           </div>
         </div>
