@@ -49,8 +49,6 @@ function createWindow() {
   } else {
     // Production mode - load from built files
     mainWindow.loadFile(path.join(__dirname, '../../renderer/index.html'));
-    // TEMPORARY: Open DevTools to debug blank window
-    mainWindow.webContents.openDevTools();
   }
 
   mainWindow.on('closed', () => {
