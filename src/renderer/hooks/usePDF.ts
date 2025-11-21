@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getDocument, GlobalWorkerOptions, version } from 'pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist';
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { UsePDFReturn } from '../components/PDFViewer/types';
+
+const { getDocument, GlobalWorkerOptions, version } = pdfjsLib;
 
 // Configure PDF.js worker
 // Use CDN worker for reliability in both dev and production
