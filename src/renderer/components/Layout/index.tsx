@@ -106,7 +106,7 @@ export const Layout: React.FC = () => {
   };
 
   // Handle editor state changes
-  const handleEditorStateChange = (newWordCount: number, newIsDirty: boolean) => {
+  const handleEditorStateChange = useCallback((newWordCount: number, newIsDirty: boolean) => {
     if (!activeTabPath) return;
 
     setTabs((prevTabs) =>
@@ -116,7 +116,7 @@ export const Layout: React.FC = () => {
           : tab
       )
     );
-  };
+  }, [activeTabPath]);
 
   // Handle citation opening
   const handleOpenCitation = useCallback(async (data: {
@@ -194,9 +194,11 @@ export const Layout: React.FC = () => {
     };
   }, [handleOpenCitation]);
 
-  // Listen for custom events (settings, export, etc.)
+  // Listen for menu IPC events from main process
   useEffect(() => {
-    const handleOpenSettings = () => setSettingsOpen(true);
+    const handleCommandPalette = () => setCommandPaletteOpen(true);
+    const handleToggleSidebar = () => setSidebarVisible((prev) => !prev);
+    const handleSettings = () => setSettingsOpen(true);
     const handleExportHTML = async () => {
       if (activeTab?.file.type === 'markdown') {
         try {
@@ -220,12 +222,25 @@ export const Layout: React.FC = () => {
       }
     };
 
-    window.addEventListener('open-settings', handleOpenSettings);
+    // Menu IPC events
+    window.events.on('menu:command-palette', handleCommandPalette);
+    window.events.on('menu:toggle-sidebar', handleToggleSidebar);
+    window.events.on('menu:settings', handleSettings);
+    window.events.on('menu:export-html', handleExportHTML);
+    window.events.on('menu:export-pdf', handleExportPDF);
+
+    // Custom DOM events (for backwards compatibility)
+    window.addEventListener('open-settings', handleSettings);
     window.addEventListener('export-html', handleExportHTML);
     window.addEventListener('export-pdf', handleExportPDF);
 
     return () => {
-      window.removeEventListener('open-settings', handleOpenSettings);
+      window.events.off('menu:command-palette', handleCommandPalette);
+      window.events.off('menu:toggle-sidebar', handleToggleSidebar);
+      window.events.off('menu:settings', handleSettings);
+      window.events.off('menu:export-html', handleExportHTML);
+      window.events.off('menu:export-pdf', handleExportPDF);
+      window.removeEventListener('open-settings', handleSettings);
       window.removeEventListener('export-html', handleExportHTML);
       window.removeEventListener('export-pdf', handleExportPDF);
     };

@@ -27,6 +27,12 @@ interface WYSIWYGEditorProps {
 
 const MilkdownEditor: React.FC<WYSIWYGEditorProps> = ({ value, onChange, loading }) => {
   const editorRef = useRef<Editor | null>(null);
+  const onChangeRef = useRef(onChange);
+
+  // Keep onChange ref up to date
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEditor((root) => {
     const editor = Editor.make()
@@ -37,9 +43,9 @@ const MilkdownEditor: React.FC<WYSIWYGEditorProps> = ({ value, onChange, loading
         // Configure editor view
         ctx.set(editorViewOptionsCtx, { editable: () => !loading });
 
-        // Set up change listener
+        // Set up change listener with stable ref
         ctx.get(listenerCtx).markdownUpdated((ctx, markdown) => {
-          onChange(markdown);
+          onChangeRef.current(markdown);
         });
       })
       .config(nord)
@@ -51,7 +57,7 @@ const MilkdownEditor: React.FC<WYSIWYGEditorProps> = ({ value, onChange, loading
     editorRef.current = editor;
 
     return editor;
-  }, []);
+  }, [value, loading]);
 
   // Update editor content when value prop changes externally
   useEffect(() => {

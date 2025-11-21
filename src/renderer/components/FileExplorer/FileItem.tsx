@@ -58,6 +58,8 @@ export const FileItem: React.FC<FileItemProps> = ({
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
+    if (file.type !== 'folder') return;
+
     e.preventDefault();
     e.stopPropagation();
     setDragOver(false);
@@ -128,10 +130,11 @@ export const FileItem: React.FC<FileItemProps> = ({
   return (
     <div
       className={`
-        flex items-center px-2 py-1 cursor-pointer
+        flex items-center px-2 py-1
         hover:bg-vscode-hover
         ${isSelected ? 'bg-vscode-selection' : ''}
         ${dragOver ? 'bg-blue-500 bg-opacity-20 border-2 border-blue-500 border-dashed' : ''}
+        ${isDraggable ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}
       `}
       style={{ paddingLeft: `${depth * 12 + 8}px` }}
       onClick={handleClick}
