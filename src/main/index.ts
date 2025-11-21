@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, protocol } from 'electron';
 import path from 'path';
 import { registerAllHandlers } from './ipc';
 import { localStorage } from './services/LocalStorage';
@@ -8,6 +8,19 @@ import { initializeSettingsService } from './ipc/settings-handlers';
 import { initializeRecentFilesService } from './ipc/recent-handlers';
 import { initializeExportService } from './ipc/export-handlers';
 import { autoUpdaterService } from './services/AutoUpdater';
+
+// MUST register custom protocol schemes BEFORE app.whenReady()
+// See: https://www.electronjs.org/docs/latest/api/protocol#protocolregisterschemesasprivilegedcustomschemes
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'noto',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+    },
+  },
+]);
 
 let mainWindow: BrowserWindow | null = null;
 
