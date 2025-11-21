@@ -30,6 +30,12 @@ export function useFileContent({
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const currentFilePathRef = useRef<string | null>(null);
+  const contentRef = useRef<string>('');
+  const filePathRef = useRef<string | null>(null);
+
+  // Update refs when state changes
+  contentRef.current = content;
+  filePathRef.current = filePath;
 
   // Load file content
   const loadContent = useCallback(async () => {
@@ -60,13 +66,16 @@ export function useFileContent({
 
   // Save file content
   const save = useCallback(async () => {
-    if (!filePath || !isDirty) {
+    const currentPath = filePathRef.current;
+    const currentContent = contentRef.current;
+
+    if (!currentPath || currentContent === savedContent) {
       return;
     }
 
     try {
-      await window.api['file:write'](filePath, content);
-      setSavedContent(content);
+      await window.api['file:write'](currentPath, currentContent);
+      setSavedContent(currentContent);
       setIsDirty(false);
       setError(null);
     } catch (err) {
@@ -75,7 +84,7 @@ export function useFileContent({
       console.error('Error saving file:', err);
       throw err;
     }
-  }, [filePath, content, isDirty]);
+  }, [savedContent]);
 
   // Set content with dirty tracking
   const setContent = useCallback(
@@ -88,24 +97,41 @@ export function useFileContent({
         clearTimeout(saveTimeoutRef.current);
       }
 
-      saveTimeoutRef.current = setTimeout(() => {
-        if (newContent !== savedContent && filePath) {
-          save();
+      saveTimeoutRef.current = setTimeout(async () => {
+        const currentPath = filePathRef.current;
+        const currentContent = contentRef.current;
+
+        if (currentPath && currentContent !== savedContent) {
+          try {
+            await window.api['file:write'](currentPath, currentContent);
+            setSavedContent(currentContent);
+            setIsDirty(false);
+            setError(null);
+          } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to auto-save file';
+            setError(errorMessage);
+            console.error('Error auto-saving file:', err);
+          }
         }
       }, autoSaveDelay);
     },
-    [savedContent, filePath, save, autoSaveDelay]
+    [savedContent, autoSaveDelay]
   );
 
   // Load content when file path changes
   useEffect(() => {
     // Save previous file before switching
-    if (currentFilePathRef.current && currentFilePathRef.current !== filePath && isDirty) {
-      save();
+    if (currentFilePathRef.current && currentFilePathRef.current !== filePath) {
+      const previousContent = contentRef.current;
+      const previousPath = currentFilePathRef.current;
+
+      if (previousPath && previousContent !== savedContent) {
+        window.api['file:write'](previousPath, previousContent).catch(console.error);
+      }
     }
 
     loadContent();
-  }, [filePath, loadContent, isDirty, save]);
+  }, [filePath, loadContent, savedContent]);
 
   // Save before unmount
   useEffect(() => {
@@ -115,11 +141,14 @@ export function useFileContent({
       }
 
       // Save on unmount if dirty
-      if (isDirty && filePath) {
-        window.api['file:write'](filePath, content).catch(console.error);
+      const currentPath = filePathRef.current;
+      const currentContent = contentRef.current;
+
+      if (currentPath && currentContent) {
+        window.api['file:write'](currentPath, currentContent).catch(console.error);
       }
     };
-  }, [isDirty, filePath, content]);
+  }, []);
 
   return {
     content,

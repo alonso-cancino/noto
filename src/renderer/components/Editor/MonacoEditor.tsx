@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import Editor, { OnChange, OnMount } from '@monaco-editor/react';
 import type { editor as MonacoEditor } from 'monaco-editor';
 
@@ -60,6 +60,16 @@ export const MarkdownMonacoEditor: React.FC<MonacoEditorProps> = ({
     },
     [onChange]
   );
+
+  // Cleanup editor on unmount
+  useEffect(() => {
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.dispose();
+        editorRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <Editor

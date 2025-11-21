@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MarkdownMonacoEditor } from './MonacoEditor';
 import { MarkdownPreview } from './MarkdownPreview';
 import { useFileContent } from '../../hooks/useFileContent';
@@ -16,14 +16,13 @@ export const Editor: React.FC<EditorProps> = ({ filePath, onContentChange }) => 
     autoSaveDelay: 500,
   });
 
-  const handleContentChange = (newContent: string) => {
-    setContent(newContent);
-
-    if (onContentChange) {
-      const wordCount = countWords(newContent);
-      onContentChange(newContent, wordCount, isDirty);
+  // Notify parent of content changes
+  useEffect(() => {
+    if (onContentChange && content !== undefined) {
+      const wordCount = countWords(content);
+      onContentChange(content, wordCount, isDirty);
     }
-  };
+  }, [content, isDirty, onContentChange]);
 
   if (loading) {
     return (
@@ -76,7 +75,7 @@ export const Editor: React.FC<EditorProps> = ({ filePath, onContentChange }) => 
       <div className="flex-1 flex overflow-hidden">
         {/* Editor Pane */}
         <div className={showPreview ? 'w-1/2' : 'w-full'}>
-          <MarkdownMonacoEditor value={content} onChange={handleContentChange} />
+          <MarkdownMonacoEditor value={content} onChange={setContent} />
         </div>
 
         {/* Preview Pane */}

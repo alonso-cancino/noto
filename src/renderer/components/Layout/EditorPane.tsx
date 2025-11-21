@@ -49,6 +49,7 @@ export const EditorPane: React.FC<EditorPaneProps> = ({
         <div className="flex-1 overflow-hidden">
           {file.type === 'markdown' ? (
             <Editor
+              key={file.path}
               filePath={file.path}
               onContentChange={(content, wordCount, isDirty) => {
                 onEditorStateChange?.(wordCount, isDirty);
