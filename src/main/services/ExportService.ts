@@ -11,6 +11,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import MarkdownIt from 'markdown-it';
+import { BrowserWindow } from 'electron';
 
 export class ExportService {
   private workspaceRoot: string;
@@ -51,24 +52,63 @@ export class ExportService {
   }
 
   /**
-   * Export markdown to PDF (via HTML and print)
-   * Note: This requires a more complex solution with puppeteer or similar
-   * For now, we'll create an HTML file that can be printed to PDF
+   * Export markdown to PDF using Electron's printToPDF
    */
   async exportToPDF(filePath: string, outputPath: string): Promise<void> {
+    let tempWindow: BrowserWindow | null = null;
+
     try {
-      // For now, export to HTML with print-optimized CSS
-      // In a full implementation, you would use puppeteer or electron's printToPDF
-      const htmlPath = outputPath.replace('.pdf', '.html');
-      await this.exportToHTML(filePath, htmlPath);
+      // Read markdown file
+      const fullPath = path.join(this.workspaceRoot, filePath);
+      const markdown = await fs.readFile(fullPath, 'utf-8');
 
-      console.log(`Exported to HTML (for PDF printing): ${htmlPath}`);
-      console.log('Note: Use "Print to PDF" in your browser to create the final PDF');
+      // Convert to HTML
+      const html = this.md.render(markdown);
+      const completeHTML = this.wrapHTML(html, path.basename(filePath, '.md'));
 
-      // TODO: Implement actual PDF generation using electron's printToPDF or puppeteer
+      // Create hidden browser window for PDF generation
+      tempWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        show: false, // Hidden window
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true,
+        },
+      });
+
+      // Load HTML content
+      await tempWindow.loadURL(
+        `data:text/html;charset=utf-8,${encodeURIComponent(completeHTML)}`
+      );
+
+      // Wait for KaTeX to render math (if any)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Generate PDF
+      const pdfData = await tempWindow.webContents.printToPDF({
+        margins: {
+          top: 0.5,
+          bottom: 0.5,
+          left: 0.5,
+          right: 0.5,
+        },
+        printBackground: true,
+        pageSize: 'A4',
+      });
+
+      // Write PDF to file
+      await fs.writeFile(outputPath, pdfData);
+
+      console.log(`Exported to PDF: ${outputPath}`);
     } catch (error) {
       console.error('Error exporting to PDF:', error);
       throw error;
+    } finally {
+      // Clean up: close the temporary window
+      if (tempWindow && !tempWindow.isDestroyed()) {
+        tempWindow.close();
+      }
     }
   }
 

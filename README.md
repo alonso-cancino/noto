@@ -12,9 +12,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 ## Current Status
 
 **Version:** 1.0.0
-**Status:** Production Ready 🚀
+**Status:** Production Ready 🚀 (75% Complete, Fully Functional)
 
-All planned features are complete! Noto v1.0.0 includes:
+Noto is feature-complete for core functionality and ready for daily use! All major systems are implemented:
 
 ### ✅ Core Features
 - **Markdown Editor** - Full markdown support with live preview (Monaco Editor)
@@ -84,9 +84,7 @@ See [Releases](https://github.com/yourusername/noto/releases) for downloads.
 
 ## Installation
 
-### Development Setup (Current)
-
-**Note:** Noto is in early development. Installers will be available after Phase 8.
+### Development Setup
 
 #### Prerequisites
 
@@ -109,6 +107,47 @@ npm run dev
 ```
 
 The app will launch with hot reload enabled.
+
+#### Google Drive Sync Setup (Optional)
+
+To enable Google Drive synchronization:
+
+1. **Create OAuth Credentials:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+   - Create a new project or select existing
+   - Enable Google Drive API
+   - Create OAuth 2.0 Client ID (Desktop app type)
+   - Download credentials
+
+2. **Configure Environment:**
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+
+   # Edit .env and add your credentials:
+   # GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+   # GOOGLE_CLIENT_SECRET=your-client-secret
+   # GOOGLE_REDIRECT_URI=http://localhost:3000/oauth/callback
+   ```
+
+3. **Restart the app** - Drive sync will now be available in Settings
+
+See [docs/GOOGLE_OAUTH_SETUP.md](docs/GOOGLE_OAUTH_SETUP.md) for detailed setup instructions.
+
+#### Building for Production
+
+```bash
+# Build the app
+npm run build
+
+# Create installers for your platform
+npm run make
+
+# Installers will be in: out/make/
+# - macOS: .dmg
+# - Windows: .exe (NSIS installer)
+# - Linux: .deb, .rpm, .AppImage
+```
 
 #### File Storage
 
