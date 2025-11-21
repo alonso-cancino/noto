@@ -3,12 +3,10 @@ import * as pdfjsLib from 'pdfjs-dist';
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { UsePDFReturn } from '../components/PDFViewer/types';
 
-const { getDocument, GlobalWorkerOptions, version } = pdfjsLib;
-
 // Configure PDF.js worker
 // Use CDN worker for reliability in both dev and production
-if (GlobalWorkerOptions) {
-  GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${version}/build/pdf.worker.min.js`;
+if (pdfjsLib.GlobalWorkerOptions) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
 }
 
 export function usePDF(initialFilePath?: string): UsePDFReturn {
@@ -30,7 +28,7 @@ export function usePDF(initialFilePath?: string): UsePDFReturn {
       const uint8Array = new Uint8Array(fileBuffer);
 
       // Load PDF document
-      const loadingTask = getDocument({ data: uint8Array });
+      const loadingTask = pdfjsLib.getDocument({ data: uint8Array });
       const pdfDocument = await loadingTask.promise;
 
       setPdf(pdfDocument);

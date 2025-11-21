@@ -7,6 +7,8 @@ interface FileItemProps {
   isSelected: boolean;
   depth?: number;
   onFileMove?: (sourcePath: string, targetFolderPath: string) => void;
+  onToggle?: () => void;
+  isExpanded?: boolean;
 }
 
 export const FileItem: React.FC<FileItemProps> = ({
@@ -14,12 +16,16 @@ export const FileItem: React.FC<FileItemProps> = ({
   onSelect,
   isSelected,
   depth = 0,
-  onFileMove
+  onFileMove,
+  onToggle,
+  isExpanded = false
 }) => {
   const [dragOver, setDragOver] = useState(false);
 
   const handleClick = () => {
-    if (file.type !== 'folder') {
+    if (file.type === 'folder' && onToggle) {
+      onToggle();
+    } else if (file.type !== 'folder') {
       onSelect(file);
     }
   };
@@ -27,7 +33,7 @@ export const FileItem: React.FC<FileItemProps> = ({
   const getIcon = () => {
     switch (file.type) {
       case 'folder':
-        return '📁';
+        return isExpanded ? '📂' : '📁';
       case 'markdown':
         return '📝';
       case 'pdf':
@@ -35,6 +41,15 @@ export const FileItem: React.FC<FileItemProps> = ({
       default:
         return '📄';
     }
+  };
+
+  const getChevron = () => {
+    if (file.type !== 'folder') return null;
+    return (
+      <span className="mr-1 text-xs text-vscode-text-secondary">
+        {isExpanded ? '▼' : '▶'}
+      </span>
+    );
   };
 
   // Drag handlers for dragging this file
@@ -144,6 +159,7 @@ export const FileItem: React.FC<FileItemProps> = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
+      {getChevron()}
       <span className="mr-2 text-sm">{getIcon()}</span>
       <span className="text-sm text-vscode-text truncate">{file.name}</span>
     </div>

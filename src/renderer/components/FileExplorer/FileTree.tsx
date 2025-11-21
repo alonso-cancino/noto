@@ -11,6 +11,7 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedPath }
   const [files, setFiles] = useState<FileMetadata[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadFiles();
@@ -53,6 +54,46 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedPath }
     }
   };
 
+  const toggleFolder = (folderPath: string) => {
+    setExpandedFolders((prev) => {
+      const next = new Set(prev);
+      if (next.has(folderPath)) {
+        next.delete(folderPath);
+      } else {
+        next.add(folderPath);
+      }
+      return next;
+    });
+  };
+
+  // Build tree structure from flat file list
+  const buildTree = (flatFiles: FileMetadata[]): FileMetadata[] => {
+    const rootFiles: FileMetadata[] = [];
+
+    for (const file of flatFiles) {
+      const parts = file.path.split('/');
+      if (parts.length === 1) {
+        // Root level file/folder
+        rootFiles.push(file);
+      }
+    }
+
+    return rootFiles;
+  };
+
+  const getChildren = (parentPath: string): FileMetadata[] => {
+    return files.filter((file) => {
+      const parts = file.path.split('/');
+      const parentParts = parentPath.split('/');
+
+      // Check if this file is a direct child of the parent
+      return (
+        parts.length === parentParts.length + 1 &&
+        file.path.startsWith(parentPath + '/')
+      );
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full text-vscode-text-secondary">
@@ -81,18 +122,36 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedPath }
     );
   }
 
+  const renderFileItem = (file: FileMetadata, depth = 0): React.ReactNode => {
+    const isExpanded = expandedFolders.has(file.path);
+    const children = file.type === 'folder' ? getChildren(file.path) : [];
+
+    return (
+      <React.Fragment key={file.path}>
+        <FileItem
+          file={file}
+          onSelect={onFileSelect}
+          isSelected={file.path === selectedPath}
+          onFileMove={handleFileMove}
+          depth={depth}
+          onToggle={file.type === 'folder' ? () => toggleFolder(file.path) : undefined}
+          isExpanded={isExpanded}
+        />
+        {file.type === 'folder' && isExpanded && children.length > 0 && (
+          <>
+            {children.map((child) => renderFileItem(child, depth + 1))}
+          </>
+        )}
+      </React.Fragment>
+    );
+  };
+
+  const rootFiles = buildTree(files);
+
   return (
     <div className="h-full overflow-y-auto">
       <div className="py-1">
-        {files.map((file) => (
-          <FileItem
-            key={file.path}
-            file={file}
-            onSelect={onFileSelect}
-            isSelected={file.path === selectedPath}
-            onFileMove={handleFileMove}
-          />
-        ))}
+        {rootFiles.map((file) => renderFileItem(file, 0))}
       </div>
     </div>
   );

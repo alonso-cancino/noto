@@ -28,9 +28,10 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 // Fix GPU process crash on Windows (STATUS_STACK_BUFFER_OVERRUN)
-// Disables GPU sandbox while keeping GPU acceleration for better PDF performance
+// Fully disable GPU acceleration to prevent crashes
+// Trade-off: Slightly reduced performance but stable on all Windows configurations
 if (process.platform === 'win32') {
-  app.commandLine.appendSwitch('disable-gpu-sandbox');
+  app.commandLine.appendSwitch('disable-gpu');
 }
 
 let mainWindow: BrowserWindow | null = null;

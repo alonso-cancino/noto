@@ -42,17 +42,18 @@ const MilkdownEditor: React.FC<WYSIWYGEditorProps> = ({ value, onChange, loading
 
         // Configure editor view
         ctx.set(editorViewOptionsCtx, { editable: () => !loading });
-
-        // Set up change listener with stable ref
-        ctx.get(listenerCtx).markdownUpdated((ctx, markdown) => {
-          onChangeRef.current(markdown);
-        });
       })
       .config(nord)
       .use(commonmark)
       .use(listener)
       .use(history)
-      .use(math);
+      .use(math)
+      .config((ctx) => {
+        // Set up change listener with stable ref (after plugins are loaded)
+        ctx.get(listenerCtx).markdownUpdated((ctx, markdown) => {
+          onChangeRef.current(markdown);
+        });
+      });
 
     editorRef.current = editor;
 
