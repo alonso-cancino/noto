@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import type { FileMetadata } from '../../../shared/types';
 import { FileTree } from './FileTree';
+import { InputDialog } from '../InputDialog';
 
 interface FileExplorerProps {
   onFileSelect: (file: FileMetadata) => void;
   selectedPath?: string;
 }
 
+type DialogType = 'file' | 'folder' | null;
+
 export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, selectedPath }) => {
-  const [_showNewFileDialog, _setShowNewFileDialog] = useState(false);
+  const [dialogType, setDialogType] = useState<DialogType>(null);
   const [dragActive, setDragActive] = useState(false);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -59,36 +62,39 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, select
     }
   };
 
-  const handleNewFile = async () => {
-    const fileName = prompt('Enter file name (e.g., "notes.md"):');
-    if (!fileName) return;
+  const handleNewFile = () => {
+    setDialogType('file');
+  };
+
+  const handleNewFolder = () => {
+    setDialogType('folder');
+  };
+
+  const handleDialogConfirm = async (name: string) => {
+    setDialogType(null);
 
     try {
-      // Ensure .md extension
-      const fullName = fileName.endsWith('.md') ? fileName : `${fileName}.md`;
-      await window.api['file:create'](fullName, 'markdown');
+      if (dialogType === 'file') {
+        // Ensure .md extension
+        const fullName = name.endsWith('.md') ? name : `${name}.md`;
+        await window.api['file:create'](fullName, 'markdown');
+      } else if (dialogType === 'folder') {
+        await window.api['file:create'](name, 'folder');
+      }
 
       // Refresh file tree
       window.location.reload(); // Temporary - will add proper refresh later
     } catch (error) {
-      console.error('Error creating file:', error);
-      alert('Failed to create file: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      console.error(`Error creating ${dialogType}:`, error);
+      alert(
+        `Failed to create ${dialogType}: ` +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
     }
   };
 
-  const handleNewFolder = async () => {
-    const folderName = prompt('Enter folder name:');
-    if (!folderName) return;
-
-    try {
-      await window.api['file:create'](folderName, 'folder');
-      window.location.reload(); // Temporary - will add proper refresh later
-    } catch (error) {
-      console.error('Error creating folder:', error);
-      alert(
-        'Failed to create folder: ' + (error instanceof Error ? error.message : 'Unknown error')
-      );
-    }
+  const handleDialogCancel = () => {
+    setDialogType(null);
   };
 
   return (
@@ -150,6 +156,15 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, select
           </div>
         </div>
       )}
+
+      {/* Input Dialog */}
+      <InputDialog
+        isOpen={dialogType !== null}
+        title={dialogType === 'file' ? 'Create New File' : 'Create New Folder'}
+        placeholder={dialogType === 'file' ? 'e.g., notes.md' : 'e.g., research'}
+        onConfirm={handleDialogConfirm}
+        onCancel={handleDialogCancel}
+      />
     </div>
   );
 };
