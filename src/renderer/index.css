@@ -4,6 +4,9 @@
 /* Highlight.js CSS for code syntax highlighting */
 @import 'highlight.js/styles/vs2015.css';
 
+/* PDF.js text layer and viewer styles */
+@import 'pdfjs-dist/legacy/web/pdf_viewer.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -205,4 +208,41 @@ code {
 
 .markdown-preview li.task-list-item {
   list-style-type: none;
+}
+
+/* ========================================
+   PDF Viewer Styles
+   ======================================== */
+
+/* Enhanced shadow for PDF pages */
+.shadow-3xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
+              0 10px 10px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* Text layer styling - make text invisible but selectable */
+.textLayer {
+  opacity: 0.2;
+}
+
+.textLayer > :is(span, br) {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+/* Text selection highlight */
+.textLayer ::selection {
+  background: rgba(0, 120, 212, 0.3);
+}
+
+.textLayer ::-moz-selection {
+  background: rgba(0, 120, 212, 0.3);
+}
+
+/* PDF page wrapper in continuous scroll */
+.pdf-page-wrapper {
+  transition: box-shadow 0.3s ease;
 }

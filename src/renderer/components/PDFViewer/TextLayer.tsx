@@ -26,6 +26,10 @@ export function TextLayer({ page, scale }: TextLayerProps): JSX.Element {
         const textContent = await page.getTextContent();
         const viewport = page.getViewport({ scale });
 
+        // Set the --scale-factor CSS variable to match viewport scale
+        // This fixes the PDF.js warning about missing scale-factor
+        textLayerDiv.style.setProperty('--scale-factor', viewport.scale.toString());
+
         // Render text layer
         pdfjsLib.renderTextLayer({
           textContentSource: textContent,
@@ -44,7 +48,7 @@ export function TextLayer({ page, scale }: TextLayerProps): JSX.Element {
   return (
     <div
       ref={textLayerRef}
-      className="text-layer absolute inset-0 overflow-hidden"
+      className="textLayer"
       style={{
         lineHeight: '1',
         position: 'absolute',
@@ -53,8 +57,8 @@ export function TextLayer({ page, scale }: TextLayerProps): JSX.Element {
         right: 0,
         bottom: 0,
         overflow: 'hidden',
-        opacity: 0.2, // Make text invisible but selectable
         pointerEvents: 'auto',
+        userSelect: 'text',
       }}
     />
   );

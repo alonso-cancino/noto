@@ -6,6 +6,7 @@ import { PageNavigation } from './PageNavigation';
 import { ZoomControls } from './ZoomControls';
 import { ThumbnailSidebar } from './ThumbnailSidebar';
 import { SearchBar } from './SearchBar';
+import { ContinuousScrollView } from './ContinuousScrollView';
 import { PDFViewerProps } from './types';
 
 export function PDFViewer({
@@ -21,6 +22,7 @@ export function PDFViewer({
   const [scale, setScale] = useState<number>(1.0);
   const [showThumbnails, setShowThumbnails] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<'single' | 'continuous'>('continuous');
   const [_highlightedAnnotation, setHighlightedAnnotation] = useState<
     string | null
   >(null);
@@ -93,27 +95,36 @@ export function PDFViewer({
   }
 
   return (
-    <div data-testid="pdf-viewer" className="pdf-viewer flex flex-col h-full bg-gray-100">
+    <div data-testid="pdf-viewer" className="pdf-viewer flex flex-col h-full bg-[#1e1e1e]">
       {/* Toolbar with Page Navigation and Zoom Controls */}
-      <div className="flex items-center justify-between bg-gray-800">
+      <div className="flex items-center justify-between bg-[#252526] border-b border-[#3e3e42] px-2 py-2">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowThumbnails(!showThumbnails)}
-            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white ml-2"
+            className="px-3 py-1 bg-[#2d2d30] hover:bg-[#3e3e42] rounded text-sm text-white transition-colors"
             title="Toggle thumbnails"
           >
             {showThumbnails ? '◀' : '▶'} Pages
           </button>
-          <PageNavigation
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+          <button
+            onClick={() => setViewMode(viewMode === 'single' ? 'continuous' : 'single')}
+            className="px-3 py-1 bg-[#2d2d30] hover:bg-[#3e3e42] rounded text-sm text-white transition-colors"
+            title="Toggle view mode"
+          >
+            {viewMode === 'single' ? '📄 Single' : '📜 Scroll'}
+          </button>
+          {viewMode === 'single' && (
+            <PageNavigation
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowSearch(!showSearch)}
-            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white"
+            className="px-3 py-1 bg-[#2d2d30] hover:bg-[#3e3e42] rounded text-sm text-white transition-colors"
             title="Search in PDF"
           >
             🔍 Search
@@ -139,11 +150,27 @@ export function PDFViewer({
         )}
 
         {/* PDF Content */}
-        <div className="pdf-viewer-content flex-1 overflow-auto p-4">
-          <div className="flex justify-center">
-            <PDFCanvas page={currentPageProxy} scale={scale} />
+        {viewMode === 'continuous' ? (
+          <ContinuousScrollView
+            pdf={pdf}
+            scale={scale}
+            annotations={[]}
+            onPageChange={(page) => {
+              // Update current page as user scrolls
+              if (page !== currentPage) {
+                handlePageChange(page);
+              }
+            }}
+          />
+        ) : (
+          <div className="pdf-viewer-content flex-1 overflow-auto bg-[#1e1e1e] p-8">
+            <div className="flex justify-center">
+              <div className="shadow-2xl transition-shadow hover:shadow-3xl">
+                <PDFCanvas page={currentPageProxy} scale={scale} />
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
