@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.js';
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { UsePDFReturn } from '../components/PDFViewer/types';
 
 // Configure PDF.js worker
 // Use CDN worker for reliability in both dev and production
 if (pdfjsLib.GlobalWorkerOptions) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/legacy/build/pdf.worker.min.js`;
 }
 
 export function usePDF(initialFilePath?: string): UsePDFReturn {

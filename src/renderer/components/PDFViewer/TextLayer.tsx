@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { PDFPageProxy } from 'pdfjs-dist/types/src/display/api';
-import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.js';
 
 interface TextLayerProps {
   page: PDFPageProxy;

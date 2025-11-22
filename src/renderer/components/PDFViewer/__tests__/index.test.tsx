@@ -40,7 +40,7 @@ jest.mock('../../../hooks/usePDF', () => ({
 }));
 
 // Mock pdfjs-dist
-jest.mock('pdfjs-dist', () => ({
+jest.mock('pdfjs-dist/legacy/build/pdf.js', () => ({
   __esModule: true,
   GlobalWorkerOptions: { workerSrc: '' },
   version: '3.11.174',
