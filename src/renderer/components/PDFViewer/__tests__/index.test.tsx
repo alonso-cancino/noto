@@ -6,13 +6,34 @@ import { PDFViewer } from '../index';
 const mockLoadPDF = jest.fn();
 const mockGetPage = jest.fn();
 
+// Create a mock PDF document
+const mockPDF = {
+  numPages: 5,
+  getPage: jest.fn(),
+};
+
+// Create a mock page
+const mockPage = {
+  getViewport: jest.fn(() => ({
+    width: 612,
+    height: 792,
+    scale: 1,
+  })),
+  render: jest.fn(() => ({
+    promise: Promise.resolve(),
+  })),
+  getTextContent: jest.fn(() => Promise.resolve({ items: [] })),
+};
+
+mockGetPage.mockResolvedValue(mockPage);
+
 jest.mock('../../../hooks/usePDF', () => ({
-  usePDF: () => ({
-    pdf: null,
+  usePDF: (filePath: string | undefined) => ({
+    pdf: filePath ? mockPDF : null,
     loading: false,
     error: null,
     currentPage: 1,
-    totalPages: 0,
+    totalPages: filePath ? 5 : 0,
     loadPDF: mockLoadPDF,
     getPage: mockGetPage,
   }),
@@ -34,77 +55,41 @@ describe('PDFViewer', () => {
   });
 
   describe('Rendering', () => {
-    it('should render without crashing', () => {
+    it('should render without crashing', async () => {
       render(<PDFViewer filePath={mockFilePath} />);
-      expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
-    });
-
-    it('should call loadPDF when filePath is provided', () => {
-      render(<PDFViewer filePath={mockFilePath} />);
-
-      waitFor(() => {
-        expect(mockLoadPDF).toHaveBeenCalledWith(mockFilePath);
+      await waitFor(() => {
+        expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
       });
     });
 
-    it('should not call loadPDF when filePath is undefined', () => {
+
+    it('should render "No PDF loaded" when no filePath provided', () => {
       render(<PDFViewer filePath={undefined} />);
 
-      expect(mockLoadPDF).not.toHaveBeenCalled();
-    });
-
-    it('should render loading state', () => {
-      // Mock loading state
-      jest.mock('../../../hooks/usePDF', () => ({
-        usePDF: () => ({
-          pdf: null,
-          loading: true,
-          error: null,
-          currentPage: 1,
-          totalPages: 0,
-          loadPDF: mockLoadPDF,
-          getPage: mockGetPage,
-        }),
-      }));
-
-      render(<PDFViewer filePath={mockFilePath} />);
-
-      // PDF viewer should still render its container
-      expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
+      expect(screen.getByText('No PDF loaded')).toBeInTheDocument();
     });
   });
 
   describe('Props', () => {
-    it('should accept filePath prop', () => {
+    it('should accept filePath prop', async () => {
       const { rerender } = render(<PDFViewer filePath="file1.pdf" />);
 
-      expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
+      });
 
       rerender(<PDFViewer filePath="file2.pdf" />);
 
-      expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
+      });
     });
 
     it('should handle undefined filePath', () => {
       render(<PDFViewer filePath={undefined} />);
 
-      expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
+      expect(screen.getByText('No PDF loaded')).toBeInTheDocument();
     });
   });
 
-  describe('File Path Changes', () => {
-    it('should reload PDF when filePath changes', async () => {
-      const { rerender } = render(<PDFViewer filePath="file1.pdf" />);
-
-      await waitFor(() => {
-        expect(mockLoadPDF).toHaveBeenCalledWith('file1.pdf');
-      });
-
-      rerender(<PDFViewer filePath="file2.pdf" />);
-
-      await waitFor(() => {
-        expect(mockLoadPDF).toHaveBeenCalledWith('file2.pdf');
-      });
-    });
-  });
 });

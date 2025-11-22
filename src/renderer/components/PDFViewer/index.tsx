@@ -93,7 +93,7 @@ export function PDFViewer({
   }
 
   return (
-    <div className="pdf-viewer flex flex-col h-full bg-gray-100">
+    <div data-testid="pdf-viewer" className="pdf-viewer flex flex-col h-full bg-gray-100">
       {/* Toolbar with Page Navigation and Zoom Controls */}
       <div className="flex items-center justify-between bg-gray-800">
         <div className="flex items-center gap-2">

@@ -12,6 +12,12 @@ describe('DriveSetup', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Mock window.api
+    (window as any).api = {
+      'drive:auth': jest.fn().mockResolvedValue(true),
+      'drive:sync': jest.fn().mockResolvedValue({ status: 'success' }),
+    };
   });
 
   it('should not render when closed', () => {

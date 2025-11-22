@@ -11,6 +11,15 @@ module.exports = {
     // Handle image imports
     '\\.(jpg|jpeg|png|gif|svg|webp)$': '<rootDir>/src/__mocks__/fileMocks.js',
 
+    // Mock Milkdown packages
+    '^@milkdown/react$': '<rootDir>/__mocks__/@milkdown/react.tsx',
+    '^@milkdown/core$': '<rootDir>/__mocks__/@milkdown/core.ts',
+    '^@milkdown/theme-nord$': '<rootDir>/__mocks__/@milkdown/theme-nord.ts',
+    '^@milkdown/preset-commonmark$': '<rootDir>/__mocks__/@milkdown/preset-commonmark.ts',
+    '^@milkdown/plugin-listener$': '<rootDir>/__mocks__/@milkdown/plugin-listener.ts',
+    '^@milkdown/plugin-history$': '<rootDir>/__mocks__/@milkdown/plugin-history.ts',
+    '^@milkdown/plugin-math$': '<rootDir>/__mocks__/@milkdown/plugin-math.ts',
+
     // Handle path aliases (must match tsconfig.json)
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@main/(.*)$': '<rootDir>/src/main/$1',

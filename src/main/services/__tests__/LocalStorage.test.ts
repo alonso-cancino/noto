@@ -84,7 +84,7 @@ describe('LocalStorage', () => {
 
       await storage.writeFile('test.md', '# New Content');
 
-      expect(fs.mkdir).toHaveBeenCalledWith(mockWorkspace, { recursive: true });
+      expect(fs.mkdir).toHaveBeenCalledWith(path.normalize(mockWorkspace), { recursive: true });
       expect(fs.writeFile).toHaveBeenCalledWith(
         path.join(mockWorkspace, 'test.md'),
         '# New Content',
@@ -99,7 +99,7 @@ describe('LocalStorage', () => {
       await storage.writeFile('folder/subfolder/test.md', 'Content');
 
       expect(fs.mkdir).toHaveBeenCalledWith(
-        path.join(mockWorkspace, 'folder/subfolder'),
+        path.normalize(path.join(mockWorkspace, 'folder/subfolder')),
         { recursive: true }
       );
     });
@@ -134,7 +134,7 @@ describe('LocalStorage', () => {
       await storage.writeFileBinary('folder/file.pdf', buffer);
 
       expect(fs.mkdir).toHaveBeenCalledWith(
-        path.join(mockWorkspace, 'folder'),
+        path.normalize(path.join(mockWorkspace, 'folder')),
         { recursive: true }
       );
     });
@@ -187,7 +187,7 @@ describe('LocalStorage', () => {
       await storage.renameFile('old.md', 'folder/new.md');
 
       expect(fs.mkdir).toHaveBeenCalledWith(
-        path.join(mockWorkspace, 'folder'),
+        path.normalize(path.join(mockWorkspace, 'folder')),
         { recursive: true }
       );
     });

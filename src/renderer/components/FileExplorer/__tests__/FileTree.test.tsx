@@ -48,12 +48,12 @@ describe('FileTree', () => {
   describe('File Loading', () => {
     it('should load files recursively on mount', async () => {
       const rootFiles: FileMetadata[] = [
-        { name: 'file1.md', path: 'file1.md', type: 'markdown', size: 100, modifiedAt: new Date() },
-        { name: 'folder1', path: 'folder1', type: 'folder', size: 0, modifiedAt: new Date() },
+        { name: 'file1.md', path: 'file1.md', type: 'markdown', size: 100, modifiedTime: new Date().toISOString() },
+        { name: 'folder1', path: 'folder1', type: 'folder', size: 0, modifiedTime: new Date().toISOString() },
       ];
 
       const folderContents: FileMetadata[] = [
-        { name: 'file2.md', path: 'folder1/file2.md', type: 'markdown', size: 100, modifiedAt: new Date() },
+        { name: 'file2.md', path: 'folder1/file2.md', type: 'markdown', size: 100, modifiedTime: new Date().toISOString() },
       ];
 
       mockFileList
@@ -71,10 +71,18 @@ describe('FileTree', () => {
         expect(mockFileList).toHaveBeenCalledWith('folder1');
       });
 
-      // Should render all files
+      // Should render root level files
       await waitFor(() => {
         expect(screen.getByTestId('file-item-file1.md')).toBeInTheDocument();
         expect(screen.getByTestId('file-item-folder1')).toBeInTheDocument();
+      });
+
+      // Expand folder to see nested files
+      const folderItem = screen.getByTestId('file-item-folder1');
+      fireEvent.click(folderItem);
+
+      // Now nested files should be visible
+      await waitFor(() => {
         expect(screen.getByTestId('file-item-folder1/file2.md')).toBeInTheDocument();
       });
     });
@@ -109,11 +117,11 @@ describe('FileTree', () => {
   describe('Folder Expand/Collapse', () => {
     it('should expand folder when clicked', async () => {
       const rootFiles: FileMetadata[] = [
-        { name: 'folder1', path: 'folder1', type: 'folder', size: 0, modifiedAt: new Date() },
+        { name: 'folder1', path: 'folder1', type: 'folder', size: 0, modifiedTime: new Date().toISOString() },
       ];
 
       const folderContents: FileMetadata[] = [
-        { name: 'file1.md', path: 'folder1/file1.md', type: 'markdown', size: 100, modifiedAt: new Date() },
+        { name: 'file1.md', path: 'folder1/file1.md', type: 'markdown', size: 100, modifiedTime: new Date().toISOString() },
       ];
 
       mockFileList
@@ -142,11 +150,11 @@ describe('FileTree', () => {
 
     it('should collapse folder when clicked again', async () => {
       const rootFiles: FileMetadata[] = [
-        { name: 'folder1', path: 'folder1', type: 'folder', size: 0, modifiedAt: new Date() },
+        { name: 'folder1', path: 'folder1', type: 'folder', size: 0, modifiedTime: new Date().toISOString() },
       ];
 
       const folderContents: FileMetadata[] = [
-        { name: 'file1.md', path: 'folder1/file1.md', type: 'markdown', size: 100, modifiedAt: new Date() },
+        { name: 'file1.md', path: 'folder1/file1.md', type: 'markdown', size: 100, modifiedTime: new Date().toISOString() },
       ];
 
       mockFileList
@@ -182,7 +190,7 @@ describe('FileTree', () => {
         path: 'file1.md',
         type: 'markdown',
         size: 100,
-        modifiedAt: new Date(),
+        modifiedTime: new Date().toISOString(),
       };
 
       mockFileList.mockResolvedValueOnce([file]);
@@ -205,7 +213,7 @@ describe('FileTree', () => {
         path: 'file1.md',
         type: 'markdown',
         size: 100,
-        modifiedAt: new Date(),
+        modifiedTime: new Date().toISOString(),
       };
 
       mockFileList.mockResolvedValueOnce([file]);
@@ -222,11 +230,11 @@ describe('FileTree', () => {
   describe('File Tree Structure', () => {
     it('should build correct tree hierarchy', async () => {
       const files: FileMetadata[] = [
-        { name: 'root.md', path: 'root.md', type: 'markdown', size: 100, modifiedAt: new Date() },
-        { name: 'folder1', path: 'folder1', type: 'folder', size: 0, modifiedAt: new Date() },
-        { name: 'nested.md', path: 'folder1/nested.md', type: 'markdown', size: 100, modifiedAt: new Date() },
-        { name: 'subfolder', path: 'folder1/subfolder', type: 'folder', size: 0, modifiedAt: new Date() },
-        { name: 'deep.md', path: 'folder1/subfolder/deep.md', type: 'markdown', size: 100, modifiedAt: new Date() },
+        { name: 'root.md', path: 'root.md', type: 'markdown', size: 100, modifiedTime: new Date().toISOString() },
+        { name: 'folder1', path: 'folder1', type: 'folder', size: 0, modifiedTime: new Date().toISOString() },
+        { name: 'nested.md', path: 'folder1/nested.md', type: 'markdown', size: 100, modifiedTime: new Date().toISOString() },
+        { name: 'subfolder', path: 'folder1/subfolder', type: 'folder', size: 0, modifiedTime: new Date().toISOString() },
+        { name: 'deep.md', path: 'folder1/subfolder/deep.md', type: 'markdown', size: 100, modifiedTime: new Date().toISOString() },
       ];
 
       mockFileList
@@ -236,14 +244,27 @@ describe('FileTree', () => {
 
       render(<FileTree onFileSelect={mockOnFileSelect} />);
 
+      // Wait for root level items to be visible
       await waitFor(() => {
-        // Root level items should be visible
         expect(screen.getByTestId('file-item-root.md')).toBeInTheDocument();
         expect(screen.getByTestId('file-item-folder1')).toBeInTheDocument();
+      });
 
-        // Nested items should also be in DOM (all loaded recursively)
+      // Expand folder1 to see its children
+      const folder1 = screen.getByTestId('file-item-folder1');
+      fireEvent.click(folder1);
+
+      // Now nested items should be visible
+      await waitFor(() => {
         expect(screen.getByTestId('file-item-folder1/nested.md')).toBeInTheDocument();
         expect(screen.getByTestId('file-item-folder1/subfolder')).toBeInTheDocument();
+      });
+
+      // Expand subfolder to see deeply nested files
+      const subfolder = screen.getByTestId('file-item-folder1/subfolder');
+      fireEvent.click(subfolder);
+
+      await waitFor(() => {
         expect(screen.getByTestId('file-item-folder1/subfolder/deep.md')).toBeInTheDocument();
       });
     });
@@ -254,7 +275,7 @@ describe('FileTree', () => {
       mockFileList
         .mockRejectedValueOnce(new Error('Failed'))
         .mockResolvedValueOnce([
-          { name: 'file1.md', path: 'file1.md', type: 'markdown', size: 100, modifiedAt: new Date() },
+          { name: 'file1.md', path: 'file1.md', type: 'markdown', size: 100, modifiedTime: new Date().toISOString() },
         ]);
 
       render(<FileTree onFileSelect={mockOnFileSelect} />);

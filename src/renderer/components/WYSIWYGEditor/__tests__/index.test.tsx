@@ -2,59 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { WYSIWYGEditor } from '../index';
 
-// Mock Milkdown components
-jest.mock('@milkdown/react', () => ({
-  MilkdownProvider: ({ children }: any) => <div data-testid="milkdown-provider">{children}</div>,
-  Milkdown: () => <div data-testid="milkdown-editor">Editor</div>,
-  useEditor: (factory: any) => {
-    // Call the factory to test initialization
-    const mockRoot = document.createElement('div');
-    try {
-      factory(mockRoot);
-    } catch (error) {
-      // Ignore errors from Milkdown initialization in test environment
-    }
-  },
-}));
-
-// Mock Milkdown core
-jest.mock('@milkdown/core', () => ({
-  Editor: {
-    make: () => ({
-      config: jest.fn().mockReturnThis(),
-      use: jest.fn().mockReturnThis(),
-    }),
-  },
-  rootCtx: Symbol('rootCtx'),
-  defaultValueCtx: Symbol('defaultValueCtx'),
-  editorViewOptionsCtx: Symbol('editorViewOptionsCtx'),
-}));
-
-// Mock Milkdown plugins
-jest.mock('@milkdown/theme-nord', () => ({
-  nord: jest.fn(),
-}));
-
-jest.mock('@milkdown/preset-commonmark', () => ({
-  commonmark: jest.fn(),
-}));
-
-jest.mock('@milkdown/plugin-listener', () => ({
-  listener: jest.fn(),
-  listenerCtx: {
-    get: () => ({
-      markdownUpdated: jest.fn(),
-    }),
-  },
-}));
-
-jest.mock('@milkdown/plugin-history', () => ({
-  history: jest.fn(),
-}));
-
-jest.mock('@milkdown/plugin-math', () => ({
-  math: jest.fn(),
-}));
+// Mocks are provided by jest.config.js moduleNameMapper
 
 describe('WYSIWYGEditor', () => {
   const mockOnChange = jest.fn();
@@ -179,7 +127,7 @@ describe('WYSIWYGEditor', () => {
     });
 
     it('should apply correct background color when loading', () => {
-      render(
+      const { container } = render(
         <WYSIWYGEditor
           value={defaultValue}
           onChange={mockOnChange}
@@ -187,7 +135,8 @@ describe('WYSIWYGEditor', () => {
         />
       );
 
-      const loadingContainer = screen.getByText('Loading file...').closest('div');
+      const loadingContainer = container.querySelector('.bg-vscode-bg');
+      expect(loadingContainer).toBeInTheDocument();
       expect(loadingContainer).toHaveClass('bg-vscode-bg');
     });
   });
