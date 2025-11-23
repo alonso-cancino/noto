@@ -13,6 +13,7 @@ import { initializeRecentFilesService } from './ipc/recent-handlers';
 import { initializeExportService } from './ipc/export-handlers';
 import { autoUpdaterService } from './services/AutoUpdater';
 import { initializeDriveServices } from './ipc/drive-handlers';
+import { disableDefaultZoom } from './disableDefaultZoom';
 
 // MUST register custom protocol schemes BEFORE app.whenReady()
 // See: https://www.electronjs.org/docs/latest/api/protocol#protocolregisterschemesasprivilegedcustomschemes
@@ -175,6 +176,9 @@ function createWindow() {
       preload: path.join(__dirname, '../preload/index.js'),
     },
   });
+
+  // Disable Electron's default zoom to allow custom PDF viewer zoom
+  disableDefaultZoom(mainWindow);
 
   // Load the app
   if (process.env.NODE_ENV === 'development') {

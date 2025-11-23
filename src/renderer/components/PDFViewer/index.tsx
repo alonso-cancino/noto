@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { PDFPageProxy } from 'pdfjs-dist/types/src/display/api';
 import { usePDF } from '../../hooks/usePDF';
+import { useZoomGestures } from '../../hooks/useZoomGestures';
 import { PDFCanvas } from './PDFCanvas';
 import { PageNavigation } from './PageNavigation';
 import { ZoomControls } from './ZoomControls';
@@ -26,6 +27,17 @@ export function PDFViewer({
   const [_highlightedAnnotation, setHighlightedAnnotation] = useState<
     string | null
   >(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Enable native zoom gestures (trackpad, Ctrl+wheel, keyboard shortcuts)
+  useZoomGestures({
+    containerRef,
+    scale,
+    onScaleChange: setScale,
+    minScale: 0.5,
+    maxScale: 3.0,
+    zoomSpeed: 0.1,
+  });
 
   // Load page when PDF is ready or page changes
   useEffect(() => {
@@ -95,7 +107,7 @@ export function PDFViewer({
   }
 
   return (
-    <div data-testid="pdf-viewer" className="pdf-viewer flex flex-col h-full bg-[#1e1e1e]">
+    <div ref={containerRef} data-testid="pdf-viewer" className="pdf-viewer flex flex-col h-full bg-[#1e1e1e]">
       {/* Toolbar with Page Navigation and Zoom Controls */}
       <div className="flex items-center justify-between bg-[#252526] border-b border-[#3e3e42] px-2 py-2">
         <div className="flex items-center gap-2">

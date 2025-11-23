@@ -82,6 +82,7 @@ export function AnnotationLayer({
         data-annotation-id={annotation.id}
         data-annotation-type="highlight"
         className="annotation-highlight cursor-pointer hover:opacity-60 transition-opacity"
+        style={{ pointerEvents: 'auto' }}
         onClick={() => handleAnnotationClick(annotation)}
         onContextMenu={(e) => handleAnnotationRightClick(annotation, e)}
       />
@@ -98,6 +99,7 @@ export function AnnotationLayer({
         data-annotation-id={annotation.id}
         data-annotation-type="note"
         className="annotation-note cursor-pointer"
+        style={{ pointerEvents: 'auto' }}
         onClick={() => handleAnnotationClick(annotation)}
         onContextMenu={(e) => handleAnnotationRightClick(annotation, e)}
       >
@@ -139,6 +141,7 @@ export function AnnotationLayer({
           fill={annotation.color || '#90CAF9'}
           opacity={annotation.opacity || 0.2}
           className="cursor-pointer"
+          style={{ pointerEvents: 'auto' }}
           onClick={() => handleAnnotationClick(annotation)}
           onContextMenu={(e) => handleAnnotationRightClick(annotation, e)}
         />
@@ -175,7 +178,7 @@ export function AnnotationLayer({
   return (
     <svg
       ref={svgRef}
-      className="annotation-layer absolute top-0 left-0 pointer-events-auto"
+      className="annotation-layer absolute top-0 left-0"
       width={dimensions.width}
       height={dimensions.height}
       style={{
@@ -183,6 +186,7 @@ export function AnnotationLayer({
         top: 0,
         left: 0,
         zIndex: 10,
+        pointerEvents: 'none',
       }}
     >
       {pageAnnotations.map((annotation) => renderAnnotation(annotation))}

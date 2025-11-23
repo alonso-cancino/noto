@@ -59,6 +59,7 @@ export function TextLayer({ page, scale }: TextLayerProps): JSX.Element {
         overflow: 'hidden',
         pointerEvents: 'auto',
         userSelect: 'text',
+        zIndex: 5,
       }}
     />
   );

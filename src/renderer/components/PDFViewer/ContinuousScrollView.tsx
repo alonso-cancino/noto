@@ -23,6 +23,7 @@ export function ContinuousScrollView({
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const previousScaleRef = useRef<number>(scale);
 
   // Load all page proxies
   useEffect(() => {
@@ -102,6 +103,32 @@ export function ContinuousScrollView({
       }
     };
   }, [pages, onPageChange]);
+
+  // Handle zoom changes - maintain scroll position proportionally
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || previousScaleRef.current === scale) return;
+
+    const oldScale = previousScaleRef.current;
+    const newScale = scale;
+    const scaleFactor = newScale / oldScale;
+
+    // Get current scroll position
+    const scrollTop = container.scrollTop;
+    const scrollLeft = container.scrollLeft;
+
+    // Calculate center of viewport
+    const centerY = scrollTop + container.clientHeight / 2;
+    const centerX = scrollLeft + container.clientWidth / 2;
+
+    // After re-render with new scale, adjust scroll to keep center in view
+    requestAnimationFrame(() => {
+      container.scrollTop = centerY * scaleFactor - container.clientHeight / 2;
+      container.scrollLeft = centerX * scaleFactor - container.clientWidth / 2;
+    });
+
+    previousScaleRef.current = scale;
+  }, [scale]);
 
   // Update observer when page refs change
   const setPageRef = useCallback((pageNum: number, el: HTMLDivElement | null) => {
